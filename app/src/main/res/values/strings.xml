@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">PMQ</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_sign_in">SignInActivity</string>
+
+    <!-- LOGIN USER CONSTANTS -->
+    <string name="prompt_username">Username</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="prompt_password_confirm">Confirm Password</string>
+    <string name="register">Register</string>
+    <string name="passwords_dont_match">Passwords Do Not Match</string>
+    <string name="sign_in_activity_label">Sign In</string>
+    <string name="error_invalid_password">Please enter valid password</string>
+    <string name="error_required_field">Field is Required</string>
+    <string name="action_log_in_short">Log In Short</string>
+    <string name="logout">Log out</string>
+    <string name="title_activity_register">RegisterActivity</string>
+
+    <!-- LOGIN INTO PARTY CONSTANTS -->
+    <string name="prompt_party_name">Party Name</string>
+    <string name="prompt_pass_phrase">Pass Phrase</string>
+    <string name="join_party">Join Party</string>
+    <string name="create_party">Create Party</string>
+    <string name="passphrases_dont_match">Pass Phrases must match</string>
+
+    <!-- -->
+    <string name="sign_in_spotify">Sign Into Spotify</string>
+    <string name="title_activity_create_party">CreatePartyActivity</string>
+    <string name="title_activity_party_view">PartyViewActivity</string>
+
+    <string name="add_song">Add Song</string>
+</resources>
