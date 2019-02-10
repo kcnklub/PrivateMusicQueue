@@ -1,15 +1,14 @@
-package com.musicparty.pmq.ui.Adapters
+package com.jukebox.hero.ui.Adapters
 
 import android.app.Activity
 import android.content.Context
-import android.text.Layout
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
-import com.musicparty.pmq.Models.Song
-import com.musicparty.pmq.R
+import com.jukebox.hero.Models.Song
+import com.jukebox.hero.R
 
 class SongsAdapter(context: Context,
                    private var layoutResourceId: Int,

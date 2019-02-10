@@ -1,4 +1,4 @@
-package com.musicparty.pmq.util
+package com.jukebox.hero.util
 
 class PreferencesUtil{
     companion object {

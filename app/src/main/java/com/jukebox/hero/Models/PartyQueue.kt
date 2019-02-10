@@ -1,4 +1,4 @@
-package com.musicparty.pmq.Models
+package com.jukebox.hero.Models
 
 object PartyQueue {
     data class Result(val partyQueueId : Int,

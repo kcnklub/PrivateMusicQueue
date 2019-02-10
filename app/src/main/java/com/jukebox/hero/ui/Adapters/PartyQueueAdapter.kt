@@ -1,4 +1,4 @@
-package com.musicparty.pmq.ui.Adapters
+package com.jukebox.hero.ui.Adapters
 
 import android.app.Activity
 import android.content.Context
@@ -7,10 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
-import com.musicparty.pmq.Models.PartyQueue
-import com.musicparty.pmq.R
-import kotlinx.android.synthetic.main.listview_partyqueue_item_row.view.*
-import org.w3c.dom.Text
+import com.jukebox.hero.Models.PartyQueue
+import com.jukebox.hero.R
 
 class PartyQueueAdapter(context: Context,
                         private var layoutResourceId : Int,

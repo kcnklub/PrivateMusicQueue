@@ -1,4 +1,4 @@
-package com.musicparty.pmq.Models
+package com.jukebox.hero.Models
 
 object Song {
     data class Result(val songId : Int,
@@ -16,5 +16,4 @@ object Song {
                     val positionInQueue : Int,
                     val queueId : Int,
                     val requesterUsername : String)
-
 }

@@ -1,6 +1,6 @@
-package com.musicparty.pmq.services
+package com.jukebox.hero.services
 
-import com.musicparty.pmq.Models.User
+import com.jukebox.hero.Models.User
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory

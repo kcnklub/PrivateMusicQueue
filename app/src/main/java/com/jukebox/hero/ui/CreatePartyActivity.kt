@@ -1,4 +1,4 @@
-package com.musicparty.pmq.ui
+package com.jukebox.hero.ui
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,10 +7,10 @@ import android.text.TextUtils.isEmpty
 import android.util.Log
 import android.view.View
 import android.widget.*
-import com.musicparty.pmq.Models.PartyQueue
-import com.musicparty.pmq.R
-import com.musicparty.pmq.services.PmqPartyQueueService
-import com.musicparty.pmq.util.SaveSharedPreference
+import com.jukebox.hero.Models.PartyQueue
+import com.jukebox.hero.services.PmqPartyQueueService
+import com.jukebox.hero.util.SaveSharedPreference
+import com.jukebox.hero.R
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers

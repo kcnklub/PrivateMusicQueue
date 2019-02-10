@@ -1,14 +1,13 @@
-package com.musicparty.pmq.ui
+package com.jukebox.hero.ui
 
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.widget.ListView
 import android.widget.Toast
-import com.musicparty.pmq.Models.Song
-import com.musicparty.pmq.R
-import com.musicparty.pmq.services.PmqSongService
-import com.musicparty.pmq.ui.Adapters.SongsAdapter
+import com.jukebox.hero.Models.Song
+import com.jukebox.hero.R
+import com.jukebox.hero.services.PmqSongService
+import com.jukebox.hero.ui.Adapters.SongsAdapter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers

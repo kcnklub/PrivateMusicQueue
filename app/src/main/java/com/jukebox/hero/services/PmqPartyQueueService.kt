@@ -1,6 +1,6 @@
-package com.musicparty.pmq.services
+package com.jukebox.hero.services
 
-import com.musicparty.pmq.Models.PartyQueue
+import com.jukebox.hero.Models.PartyQueue
 import io.reactivex.Observable
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory

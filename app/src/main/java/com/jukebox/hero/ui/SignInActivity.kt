@@ -1,26 +1,27 @@
-package com.musicparty.pmq.ui
+package com.jukebox.hero.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
-import android.util.JsonReader
 import android.util.Log
 import android.view.View
 import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import com.musicparty.pmq.Models.User
-import com.musicparty.pmq.R
-import com.musicparty.pmq.services.PmqUserService
-import com.musicparty.pmq.util.SaveSharedPreference
+import com.facebook.CallbackManager
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.login.LoginManager
+import com.facebook.login.LoginResult
+import com.jukebox.hero.services.PmqUserService
+import com.jukebox.hero.util.SaveSharedPreference
+import com.jukebox.hero.R
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
-import kotlinx.android.synthetic.main.activity_sign_in.*
 import java.lang.Exception
 
 class SignInActivity : AppCompatActivity() {
@@ -38,6 +39,23 @@ class SignInActivity : AppCompatActivity() {
 
         val signInButton: Button = findViewById(R.id.signin_button)
         val registerButton: Button = findViewById(R.id.register_button)
+
+        var callbackManager = CallbackManager.Factory.create()
+
+        LoginManager.getInstance().registerCallback(callbackManager,
+                object : FacebookCallback<LoginResult>{
+                    override fun onSuccess(result: LoginResult?) {
+                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                    }
+
+                    override fun onCancel() {
+                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                    }
+
+                    override fun onError(error: FacebookException?) {
+                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                    }
+                })
 
         signInButton.setOnClickListener { attemptLogin() }
 

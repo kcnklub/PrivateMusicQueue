@@ -1,4 +1,4 @@
-package com.musicparty.pmq
+package com.jukebox.hero
 
 import org.junit.Test
 

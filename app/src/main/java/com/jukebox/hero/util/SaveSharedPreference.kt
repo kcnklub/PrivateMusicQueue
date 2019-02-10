@@ -1,4 +1,4 @@
-package com.musicparty.pmq.util
+package com.jukebox.hero.util
 
 import android.content.Context
 import android.content.SharedPreferences

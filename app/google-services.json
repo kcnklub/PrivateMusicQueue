@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "461202061173",
+    "firebase_url": "https://jukebox-hero.firebaseio.com",
+    "project_id": "jukebox-hero",
+    "storage_bucket": "jukebox-hero.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:461202061173:android:2ec334cae505f175",
+        "android_client_info": {
+          "package_name": "com.jukebox.hero"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "461202061173-32phljv944lggo4310q702o6qskvag40.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_aogTP1GKfEewsgMTPO1EMduJZCaScNU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

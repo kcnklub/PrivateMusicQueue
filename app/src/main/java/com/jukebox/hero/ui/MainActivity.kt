@@ -1,20 +1,18 @@
-package com.musicparty.pmq.ui
+package com.jukebox.hero.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.ListView
-import android.widget.TextView
 import android.widget.Toast
-import com.musicparty.pmq.Models.PartyQueue
-import com.musicparty.pmq.R
-import com.musicparty.pmq.services.PmqPartyQueueService
-import com.musicparty.pmq.ui.Adapters.PartyQueueAdapter
-import com.musicparty.pmq.util.SaveSharedPreference
+import com.jukebox.hero.Models.PartyQueue
+import com.jukebox.hero.R
+import com.jukebox.hero.services.PmqPartyQueueService
+import com.jukebox.hero.ui.Adapters.PartyQueueAdapter
+import com.jukebox.hero.util.SaveSharedPreference
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
