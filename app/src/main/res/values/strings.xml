@@ -34,4 +34,6 @@
     <string name="fb_login_protocol_scheme">fb2186499241413302</string>
 
     <string name="add_song">Add Song</string>
+
+    <string name="welcome">Welcome to JukeBox</string>
 </resources>

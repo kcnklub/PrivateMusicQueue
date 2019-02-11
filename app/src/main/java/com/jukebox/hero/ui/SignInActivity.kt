@@ -3,66 +3,49 @@ package com.jukebox.hero.ui
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.text.TextUtils
 import android.util.Log
 import android.view.View
-import android.widget.AutoCompleteTextView
-import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
+import com.facebook.AccessToken
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
-import com.jukebox.hero.services.PmqUserService
+import com.google.firebase.auth.FacebookAuthProvider
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.jukebox.hero.util.SaveSharedPreference
 import com.jukebox.hero.R
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 
-import java.lang.Exception
+class SignInActivity : AppCompatActivity(){
 
-class SignInActivity : AppCompatActivity() {
-
-    private val TAG: String = "Sign In Activty"
-
-    private var disposable : Disposable? = null
-    private val pmqUserService by lazy {
-        PmqUserService.create()
-    }
+    private lateinit var auth: FirebaseAuth
+    private lateinit var callbackManager: CallbackManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_in)
 
-        val signInButton: Button = findViewById(R.id.signin_button)
-        val registerButton: Button = findViewById(R.id.register_button)
+        auth = FirebaseAuth.getInstance()
 
-        var callbackManager = CallbackManager.Factory.create()
+        callbackManager = CallbackManager.Factory.create()
 
         LoginManager.getInstance().registerCallback(callbackManager,
                 object : FacebookCallback<LoginResult>{
                     override fun onSuccess(result: LoginResult?) {
-                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                        Log.d(TAG, "facebook:onsuccess:$result")
+                        handleFacebookAccessToken(result?.accessToken!!)
                     }
 
                     override fun onCancel() {
-                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                        Log.d(TAG, "facebook:oncancel")
                     }
 
                     override fun onError(error: FacebookException?) {
-                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                        Log.d(TAG, "facebook:onerror")
                     }
                 })
-
-        signInButton.setOnClickListener { attemptLogin() }
-
-        registerButton.setOnClickListener {
-            val intent = Intent(this, RegisterActivity::class.java)
-            startActivity(intent)
-        }
 
         if(SaveSharedPreference.getLoggedStatus(applicationContext)){
             val intent = Intent(this, MainActivity::class.java)
@@ -71,68 +54,49 @@ class SignInActivity : AppCompatActivity() {
 
     }
 
-    private fun attemptLogin(){
-        val usernameView: AutoCompleteTextView = findViewById(R.id.username_signin)
-        val passwordView: EditText = findViewById(R.id.password_signin)
+    public override fun onStart() {
+        super.onStart()
+        // check if user is signed in and update UI accordingly.
+        val currentUser = auth.currentUser
+        updateUI(currentUser)
+    }
 
-        usernameView.error = null
-        passwordView.error = null
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
 
-        val email: String = usernameView.text.toString()
-        val password: String = passwordView.text.toString()
+        callbackManager.onActivityResult(requestCode, resultCode, data)
+    }
 
-        var cancel = false
-        var focusView: View = usernameView
+    private fun handleFacebookAccessToken(token: AccessToken){
+        Log.d(TAG, "handleFacebookAccessToken:$token")
 
-        if (TextUtils.isEmpty(password)) {
-            passwordView.error = "@Strings/error_invalid_password"
-            focusView = passwordView
-            cancel = true
-        }
+        val credential = FacebookAuthProvider.getCredential(token.token)
 
-        if (TextUtils.isEmpty(email)) {
-            usernameView.error = "@Strings/error_required_field"
-            focusView = usernameView
-            cancel = true
-        }
+        auth.signInWithCredential(credential)
+                .addOnCompleteListener {
+                    if(it.isSuccessful){
+                        Log.d(TAG, "signInWithCredential:success")
+                        val user = auth.currentUser
+                        updateUI(user)
+                    } else {
+                        Log.w(TAG, "signInWithCredential:failure", it.exception)
+                        Toast.makeText(baseContext, "Authentication failed.", Toast.LENGTH_SHORT).show()
+                        updateUI(null)
+                    }
+                }
+    }
 
-        if (cancel) {
-            focusView.requestFocus()
-        } else {
-            Log.d(TAG, "LOGGING IN")
-            // Log the user in here.
-            disposable = pmqUserService.signIn(email, password)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            { result -> run {
-                                if(result.message == "success"){
-                                    //logged in
-                                    loginComplete(result.userId)
-                                } else {
-                                    throw Exception(result.message)
-                                }
-                            }},
-                            { error ->
-                                run {
-                                    Toast.makeText(this, error.message, Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                    )
+    private fun updateUI(user: FirebaseUser?){
+
+        if(user != null){
+            // move to the main activity
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
         }
     }
 
-    private fun loginComplete(userId : Int){
-        SaveSharedPreference.setLoggedIn(applicationContext, true, userId)
-        val intent = Intent(this, MainActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        startActivity(intent)
+    companion object {
+        private const val TAG = "Sign In Activity"
     }
-
-    override fun onPause() {
-        super.onPause()
-        disposable?.dispose()
-    }
-
 
 }

@@ -9,7 +9,6 @@ import android.widget.Button
 import android.widget.ListView
 import android.widget.Toast
 import com.jukebox.hero.Models.PartyQueue
-import com.jukebox.hero.R
 import com.jukebox.hero.services.PmqPartyQueueService
 import com.jukebox.hero.ui.Adapters.PartyQueueAdapter
 import com.jukebox.hero.util.SaveSharedPreference
