@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
           package="com.jukebox.hero">
 
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -15,8 +16,7 @@
         <activity
                 android:name="com.jukebox.hero.ui.MainActivity"
                 android:label="@string/app_name"
-                android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+                android:theme="@style/AppTheme.NoActionBar"/>
         <activity
                 android:name="com.jukebox.hero.ui.SignInActivity"
                 android:label="@string/title_activity_sign_in"
@@ -30,18 +30,15 @@
         <activity
                 android:name="com.jukebox.hero.ui.RegisterActivity"
                 android:label="@string/title_activity_register"
-                android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+                android:theme="@style/AppTheme.NoActionBar"/>
         <activity
                 android:name="com.jukebox.hero.ui.CreatePartyActivity"
                 android:label="@string/title_activity_create_party"
-                android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+                android:theme="@style/AppTheme.NoActionBar"/>
         <activity
                 android:name="com.jukebox.hero.ui.PartyViewActivity"
                 android:label="@string/title_activity_party_view"
-                android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+                android:theme="@style/AppTheme.NoActionBar"/>
 
         <meta-data android:name="com.facebook.sdk.ApplicationId"
                    android:value="@string/facebook_app_id"/>
@@ -60,7 +57,5 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
-
     </application>
-
 </manifest>
