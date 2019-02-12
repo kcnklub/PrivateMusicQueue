@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.view.View
 import android.widget.Toast
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
@@ -28,7 +27,6 @@ class SignInActivity : AppCompatActivity(){
         setContentView(R.layout.activity_sign_in)
 
         auth = FirebaseAuth.getInstance()
-
         callbackManager = CallbackManager.Factory.create()
 
         LoginManager.getInstance().registerCallback(callbackManager,
@@ -46,12 +44,10 @@ class SignInActivity : AppCompatActivity(){
                         Log.d(TAG, "facebook:onerror")
                     }
                 })
-
         if(SaveSharedPreference.getLoggedStatus(applicationContext)){
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
-
     }
 
     public override fun onStart() {
@@ -87,7 +83,6 @@ class SignInActivity : AppCompatActivity(){
     }
 
     private fun updateUI(user: FirebaseUser?){
-
         if(user != null){
             // move to the main activity
             val intent = Intent(this, MainActivity::class.java)
@@ -98,5 +93,4 @@ class SignInActivity : AppCompatActivity(){
     companion object {
         private const val TAG = "Sign In Activity"
     }
-
 }

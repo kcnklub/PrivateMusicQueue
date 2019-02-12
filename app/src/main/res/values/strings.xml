@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PMQ</string>
+    <string name="app_name">Jukebox</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_sign_in">SignInActivity</string>
 

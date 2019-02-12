@@ -10,11 +10,12 @@ import android.widget.ListView
 import android.widget.Toast
 import com.jukebox.hero.Models.PartyQueue
 import com.jukebox.hero.services.PmqPartyQueueService
-import com.jukebox.hero.ui.Adapters.PartyQueueAdapter
+import com.jukebox.hero.ui.adapters.PartyQueueAdapter
 import com.jukebox.hero.util.SaveSharedPreference
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import com.jukebox.hero.R
 
 import kotlinx.android.synthetic.main.activity_main.*
 

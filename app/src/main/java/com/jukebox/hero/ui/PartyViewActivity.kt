@@ -7,7 +7,7 @@ import android.widget.Toast
 import com.jukebox.hero.Models.Song
 import com.jukebox.hero.R
 import com.jukebox.hero.services.PmqSongService
-import com.jukebox.hero.ui.Adapters.SongsAdapter
+import com.jukebox.hero.ui.adapters.SongsAdapter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -25,12 +25,12 @@ class PartyViewActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_party_view)
         setSupportActionBar(toolbar)
-        val partyQueueId : Int = this.intent.extras["partyQueueId"] as Int
-        disposable = pmqSongService.getSongsForParty(partyQueueId)
+        val partyQueueId : Int? = this.intent.extras["partyQueueId"] as Int?
+        disposable = pmqSongService.getSongsForParty(partyQueueId!!)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        {result -> run{
+                        { result -> run{
                             if(!result.isEmpty()){
                                 setUpListView(result)
                             } else {

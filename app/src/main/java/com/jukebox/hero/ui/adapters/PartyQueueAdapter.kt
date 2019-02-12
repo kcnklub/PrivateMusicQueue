@@ -1,4 +1,4 @@
-package com.jukebox.hero.ui.Adapters
+package com.jukebox.hero.ui.adapters
 
 import android.app.Activity
 import android.content.Context

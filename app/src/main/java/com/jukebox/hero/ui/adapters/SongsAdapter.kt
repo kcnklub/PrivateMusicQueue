@@ -1,4 +1,4 @@
-package com.jukebox.hero.ui.Adapters
+package com.jukebox.hero.ui.adapters
 
 import android.app.Activity
 import android.content.Context
@@ -14,14 +14,15 @@ class SongsAdapter(context: Context,
                    private var layoutResourceId: Int,
                    private var data: List<Song.Song>) :
         ArrayAdapter<Song.Song>(context, layoutResourceId, data) {
+
     private var layoutInflater : LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View? {
         var row : View? = convertView
-        var holder : SongHolder? = null
+        val holder: SongHolder?
         if(row == null){
-            var activity : Activity = context as Activity
-            var layoutInflater = activity.layoutInflater
+            val activity : Activity = context as Activity
+            val layoutInflater = activity.layoutInflater
             row = layoutInflater.inflate(layoutResourceId, parent, false)
             holder = SongHolder(row.findViewById(R.id.song_id) as TextView)
         } else {
@@ -34,6 +35,4 @@ class SongsAdapter(context: Context,
     }
 
     class SongHolder (val textView: TextView)
-
-
 }
