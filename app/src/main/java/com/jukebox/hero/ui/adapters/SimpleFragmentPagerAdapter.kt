@@ -4,6 +4,7 @@ import android.content.Context
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
+import com.jukebox.hero.ui.fragments.playerFragment
 import com.jukebox.hero.ui.testOne
 
 class SimpleFragmentPagerAdapter(val context: Context,
@@ -12,7 +13,7 @@ class SimpleFragmentPagerAdapter(val context: Context,
     override fun getItem(p0: Int): Fragment {
         return when(p0){
             0 -> testOne.newInstance("test", "test")
-            1 -> testOne.newInstance("test2", "test2")
+            1 -> playerFragment.newInstance("test2", "test2")
             else -> testOne.newInstance("test3", "test3")
         }
     }
