@@ -32,41 +32,16 @@ class MainActivity : AppCompatActivity(){
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-//        val createPartyButton = findViewById<Button>(R.id.create_party)
-//        createPartyButton.setOnClickListener {
-//            val intent = Intent(this, CreatePartyActivity::class.java)
-//            startActivity(intent)
-//        }
-
-//        navigation.setOnNavigationItemSelectedListener(
-//                object : BottomNavigationView.OnNavigationItemSelectedListener{
-//                    override fun onNavigationItemSelected(p0: MenuItem): Boolean {
-//                        var selectedFragment : Fragment? = null
-//                        when(p0.itemId){
-//                            R.id.action_item1 -> {
-//                                selectedFragment = testOne.newInstance("test", "test")
-//                            }
-//                            R.id.action_item2 -> {
-//                                selectedFragment = testOne.newInstance("test2", "test2")
-//                            }
-//                            R.id.action_item3 -> {
-//                                selectedFragment = testOne.newInstance("test3", "test3")
-//                            }
-//                        }
-//                        val transaction = supportFragmentManager.beginTransaction()
-//                        transaction.replace(R.id.frame_layout, selectedFragment!!)
-//                        transaction.commit()
-//                        return true
-//                    }
-//                }
-//        )
-
-//        val transaction = supportFragmentManager.beginTransaction()
-//        transaction.replace(R.id.frame_layout, testOne.newInstance("test", "test"))
-//        transaction.commit()
-
         viewpager.adapter = SimpleFragmentPagerAdapter(this, supportFragmentManager)
         navigation.setupWithViewPager(viewpager)
+        navigation.getTabAt(0)?.setIcon(R.drawable.ic_view_agenda_black_24dp)
+        navigation.getTabAt(0)?.text = ""
+
+        navigation.getTabAt(1)?.setIcon(R.drawable.ic_playlist_add_black_24dp)
+        navigation.getTabAt(1)?.text = ""
+
+        navigation.getTabAt(2)?.setIcon(R.drawable.ic_perm_identity_black_24dp)
+        navigation.getTabAt(2)?.text = ""
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
