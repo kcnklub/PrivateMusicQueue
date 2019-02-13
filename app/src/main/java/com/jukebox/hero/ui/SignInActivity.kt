@@ -2,9 +2,9 @@ package com.jukebox.hero.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
@@ -21,10 +21,10 @@ import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
-import com.jukebox.hero.util.SaveSharedPreference
 import com.jukebox.hero.R
+import kotlinx.android.synthetic.main.activity_sign_in.*
 
-class SignInActivity : AppCompatActivity(){
+class SignInActivity : AppCompatActivity(), View.OnClickListener{
 
     private lateinit var auth: FirebaseAuth
     private lateinit var callbackManager: CallbackManager
@@ -34,8 +34,10 @@ class SignInActivity : AppCompatActivity(){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_in)
 
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
+        googleSignInButton.setOnClickListener(this)
+
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.server_client_id))
                 .requestEmail()
                 .build()
 
@@ -59,10 +61,6 @@ class SignInActivity : AppCompatActivity(){
                         Log.d(TAG, "facebook:onerror")
                     }
                 })
-        if(SaveSharedPreference.getLoggedStatus(applicationContext)){
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-        }
     }
 
     public override fun onStart() {
@@ -107,6 +105,11 @@ class SignInActivity : AppCompatActivity(){
                 }
     }
 
+    private fun signIn(){
+        val signInIntent = googleSignInClient.signInIntent
+        startActivityForResult(signInIntent, GOOGLE_SIGN_IN)
+    }
+
     private fun firebaseAuthWithGoogle(acct : GoogleSignInAccount){
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.id)
 
@@ -130,6 +133,13 @@ class SignInActivity : AppCompatActivity(){
             // move to the main activity
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
+        }
+    }
+
+    override fun onClick(v: View) {
+        val i = v.id
+        when (i) {
+            R.id.googleSignInButton -> signIn()
         }
     }
 

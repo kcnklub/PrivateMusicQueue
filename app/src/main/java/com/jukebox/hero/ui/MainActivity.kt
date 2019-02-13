@@ -1,13 +1,18 @@
 package com.jukebox.hero.ui
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.support.design.widget.BottomNavigationView
+import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.ListView
 import android.widget.Toast
+import com.facebook.login.LoginManager
+import com.google.firebase.auth.FirebaseAuth
 import com.jukebox.hero.Models.PartyQueue
 import com.jukebox.hero.services.PmqPartyQueueService
 import com.jukebox.hero.ui.adapters.PartyQueueAdapter
@@ -16,42 +21,52 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import com.jukebox.hero.R
+import com.jukebox.hero.ui.adapters.SimpleFragmentPagerAdapter
 
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
-
-    private var disposable : Disposable? = null
-    private val pmqPartyQueueService by lazy {
-        PmqPartyQueueService.create()
-    }
+class MainActivity : AppCompatActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        val createPartyButton = findViewById<Button>(R.id.create_party)
-        createPartyButton.setOnClickListener {
-            val intent = Intent(this, CreatePartyActivity::class.java)
-            startActivity(intent)
-        }
+//        val createPartyButton = findViewById<Button>(R.id.create_party)
+//        createPartyButton.setOnClickListener {
+//            val intent = Intent(this, CreatePartyActivity::class.java)
+//            startActivity(intent)
+//        }
 
-        val userId = SaveSharedPreference.getLoggedInUserId(this)
-        disposable = pmqPartyQueueService.getAllUserParties(userId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        {result -> run {
-                            if(!result.isEmpty()){
-                                setUpListView(result)
-                            } else {
-                                throw Exception("result is empty")
-                            }
-                        }}, {error -> run {
-                    Toast.makeText(this, error.message, Toast.LENGTH_LONG).show()
-                }}
-                )
+//        navigation.setOnNavigationItemSelectedListener(
+//                object : BottomNavigationView.OnNavigationItemSelectedListener{
+//                    override fun onNavigationItemSelected(p0: MenuItem): Boolean {
+//                        var selectedFragment : Fragment? = null
+//                        when(p0.itemId){
+//                            R.id.action_item1 -> {
+//                                selectedFragment = testOne.newInstance("test", "test")
+//                            }
+//                            R.id.action_item2 -> {
+//                                selectedFragment = testOne.newInstance("test2", "test2")
+//                            }
+//                            R.id.action_item3 -> {
+//                                selectedFragment = testOne.newInstance("test3", "test3")
+//                            }
+//                        }
+//                        val transaction = supportFragmentManager.beginTransaction()
+//                        transaction.replace(R.id.frame_layout, selectedFragment!!)
+//                        transaction.commit()
+//                        return true
+//                    }
+//                }
+//        )
+
+//        val transaction = supportFragmentManager.beginTransaction()
+//        transaction.replace(R.id.frame_layout, testOne.newInstance("test", "test"))
+//        transaction.commit()
+
+        viewpager.adapter = SimpleFragmentPagerAdapter(this, supportFragmentManager)
+        navigation.setupWithViewPager(viewpager)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -67,7 +82,8 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.action_settings -> true
             R.id.log_out -> run {
-                SaveSharedPreference.setLoggedIn(applicationContext, false, 0)
+                FirebaseAuth.getInstance().signOut()
+                LoginManager.getInstance().logOut()
                 val intent = Intent(this, SignInActivity::class.java)
                 startActivity(intent)
                 true
