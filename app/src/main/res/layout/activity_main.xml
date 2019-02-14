@@ -34,6 +34,7 @@
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize"
         android:layout_alignParentBottom="true"
+        android:background="@color/cat_grayscale_8_90"
         app:tabMode="fixed" />
 
 </RelativeLayout>

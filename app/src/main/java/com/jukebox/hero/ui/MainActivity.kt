@@ -43,13 +43,13 @@ class MainActivity : AppCompatActivity(){
         viewpager.adapter = SimpleFragmentPagerAdapter(this, supportFragmentManager)
         navigation.setupWithViewPager(viewpager)
 
-        navigation.getTabAt(0)?.setIcon(R.drawable.ic_view_agenda_black_24dp)
+        navigation.getTabAt(0)?.setIcon(R.drawable.ic_view_agenda_white_24dp)
         navigation.getTabAt(0)?.text = ""
 
-        navigation.getTabAt(1)?.setIcon(R.drawable.ic_playlist_add_black_24dp)
+        navigation.getTabAt(1)?.setIcon(R.drawable.ic_play_arrow_white_24dp)
         navigation.getTabAt(1)?.text = ""
 
-        navigation.getTabAt(2)?.setIcon(R.drawable.ic_perm_identity_black_24dp)
+        navigation.getTabAt(2)?.setIcon(R.drawable.ic_perm_identity_white_24dp)
         navigation.getTabAt(2)?.text = ""
 
         // spotify shit
