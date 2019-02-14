@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PMQ</string>
+    <string name="app_name">Jukebox</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_sign_in">SignInActivity</string>
 
@@ -29,5 +29,17 @@
     <string name="title_activity_create_party">CreatePartyActivity</string>
     <string name="title_activity_party_view">PartyViewActivity</string>
 
+    <!-- facebook constants -->
+    <string name="facebook_app_id">2186499241413302</string>
+    <string name="fb_login_protocol_scheme">fb2186499241413302</string>
+
+    <!-- Google Sign in constants -->
+    <string name="server_client_id">461202061173-32phljv944lggo4310q702o6qskvag40.apps.googleusercontent.com</string>
+
     <string name="add_song">Add Song</string>
+
+    <string name="welcome">Welcome to JukeBox</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
