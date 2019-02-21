@@ -95,6 +95,8 @@ class MainActivity : AppCompatActivity(){
         }
     }
 
+
+
     companion object {
         const val TAG = "Main Activity"
         const val SPOTIFY_REQUEST_CODE = 1337

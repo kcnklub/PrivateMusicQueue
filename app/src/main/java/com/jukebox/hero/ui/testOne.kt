@@ -45,8 +45,8 @@ class testOne : Fragment() {
         // Inflate the layout for this fragment
         Log.d(TAG, "onCreateView")
         val view = inflater.inflate(R.layout.fragment_test_one, container, false)
-        val test : TextView = view!!.findViewById(R.id.test)
-        test.text = param1
+        //val test : TextView = view!!.findViewById(R.id.test)
+        //test.text = param1
         return view
     }
 
