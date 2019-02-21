@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import com.jukebox.hero.Models.Song
-import com.jukebox.hero.R
 
 class SongsAdapter(context: Context,
                    private var layoutResourceId: Int,
@@ -24,13 +23,11 @@ class SongsAdapter(context: Context,
             val activity : Activity = context as Activity
             val layoutInflater = activity.layoutInflater
             row = layoutInflater.inflate(layoutResourceId, parent, false)
-            holder = SongHolder(row.findViewById(R.id.song_id) as TextView)
         } else {
             holder = row.tag as SongHolder
         }
 
         val song : Song.Song = data[position]
-        holder.textView.text = song.songURI
         return row
     }
 
