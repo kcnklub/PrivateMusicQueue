@@ -5,10 +5,14 @@ import android.graphics.PorterDuff
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.Fragment
+import android.support.v7.widget.AppCompatImageButton
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ImageView
 import android.widget.SeekBar
 import com.google.gson.GsonBuilder
 
@@ -21,28 +25,65 @@ import com.spotify.android.appremote.api.Connector
 import com.spotify.android.appremote.api.SpotifyAppRemote
 import com.spotify.android.appremote.api.error.CouldNotFindSpotifyApp
 import com.spotify.android.appremote.api.error.NotLoggedInException
+import com.spotify.protocol.client.Subscription
+import com.spotify.protocol.types.Capabilities
+import com.spotify.protocol.types.Image
+import com.spotify.protocol.types.PlayerContext
+import com.spotify.protocol.types.PlayerState
+import java.util.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [PlayerFragment interface
- * to handle interaction events.
- * Use the [PlayerFragment.newInstance] factory method to
- * create an instance of this fragment.
- *
- */
+
 class PlayerFragment : Fragment() {
-    // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
 
 
+    var playPauseButton : AppCompatImageButton? = null
+    var skipPreviousButton : AppCompatImageButton? = null
+    var skipNextButton : AppCompatImageButton? = null
+    var coverArtImageView : ImageView? = null
+
+    var seekBar : SeekBar? = null
     var trackProgressBar : TrackProgressBar? = null
+
+    var playerStateSubscription : Subscription<PlayerState>? = null
+    var playerContextSubscription : Subscription<PlayerContext>? = null
+    var capabilitiesSubscription : Subscription<Capabilities>? = null
+
+    val playerContextEventCallBack = Subscription.EventCallback<PlayerContext> {
+
+    }
+
+    private val playerStateEventCallBack = Subscription.EventCallback<PlayerState> { playerState ->
+        if(playerState.playbackSpeed > 0){
+            trackProgressBar!!.unpause()
+        } else {
+            trackProgressBar!!.pause()
+        }
+
+        if(playerState.isPaused){
+            playPauseButton!!.setImageResource(R.drawable.btn_play)
+        } else {
+            playPauseButton!!.setImageResource(R.drawable.btn_pause)
+        }
+
+        spotifyAppRemote!!.imagesApi.getImage(playerState.track.imageUri, Image.Dimension.LARGE)
+                .setResultCallback { bitmap ->
+                    coverArtImageView!!.setImageBitmap(bitmap)
+                }
+        seekBar!!.max = playerState.track.duration.toInt()
+        trackProgressBar!!.setDuration(playerState.track.duration)
+        trackProgressBar!!.update(playerState.playbackPosition)
+
+        seekBar!!.isEnabled = true
+    }
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -67,12 +108,24 @@ class PlayerFragment : Fragment() {
         // Inflate the layout for this fragment
 
         val view  = inflater.inflate(R.layout.fragment_player, container, false)
-        val seekBar = view.findViewById<SeekBar>(R.id.seek_to)
-        seekBar.isEnabled = false
-        seekBar.progressDrawable.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
-        seekBar.indeterminateDrawable.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
+        seekBar = view.findViewById(R.id.seek_to)
+        seekBar!!.isEnabled = false
+        seekBar!!.progressDrawable.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
+        seekBar!!.indeterminateDrawable.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
 
+        coverArtImageView = view.findViewById(R.id.image)
+        playPauseButton = view.findViewById(R.id.play_pause_button)
+        playPauseButton!!.setOnClickListener{onPlayPauseClicked()}
+        skipNextButton = view.findViewById(R.id.skip_next_button)
+        skipNextButton!!.setOnClickListener{onSkipNext()}
+        skipPreviousButton = view.findViewById(R.id.skip_prev_button)
+        skipPreviousButton!!.setOnClickListener { onSkipPrevious() }
         trackProgressBar = TrackProgressBar(seekBar)
+
+        val addSongButton : Button = view.findViewById(R.id.addButton)
+        addSongButton.setOnClickListener {
+            play((view.findViewById(R.id.track_uri) as EditText).text.toString())
+        }
         return view
     }
 
@@ -130,9 +183,66 @@ class PlayerFragment : Fragment() {
 
     fun onConnected(){
         // ui update
+        if (playerStateSubscription != null && !playerStateSubscription!!.isCanceled){
+            playerStateSubscription!!.cancel()
+            playerStateSubscription = null
+        }
+
+        playerStateSubscription = spotifyAppRemote!!.playerApi
+                .subscribeToPlayerState()
+                .setEventCallback(playerStateEventCallBack)
+                .setLifecycleCallback(object : Subscription.LifecycleCallback{
+                    override fun onStart() {
+                        Log.d(TAG, "on start")
+                    }
+
+                    override fun onStop() {
+                        Log.d(TAG, "on stop")
+                    }
+                })
+                .setErrorCallback{
+                    Log.d(TAG, "Error")
+                } as Subscription<PlayerState>?
     }
 
-    class TrackProgressBar(val seekBar: SeekBar,
+    fun play(trackURI: String){
+        spotifyAppRemote!!.playerApi
+                .play(trackURI)
+                .setResultCallback { Log.d(TAG, "Play successful") }
+                .setErrorCallback { Log.d(TAG, "something went wrong.") }
+    }
+
+    // player controls
+
+    fun onSkipPrevious(){
+        spotifyAppRemote!!.playerApi.skipPrevious()
+                .setResultCallback { Log.d(TAG, "skip back") }
+                .setErrorCallback { Log.d(TAG, "Error") }
+    }
+
+    fun onSkipNext(){
+        spotifyAppRemote!!.playerApi.skipNext()
+                .setResultCallback { Log.d(TAG, "skip back") }
+                .setErrorCallback { Log.d(TAG, "Error") }
+    }
+
+    fun onPlayPauseClicked(){
+        spotifyAppRemote!!.playerApi.playerState.setResultCallback { playerState ->
+            if(playerState.isPaused){
+                spotifyAppRemote!!.playerApi
+                        .resume()
+                        .setResultCallback { Log.d(TAG, "resumed") }
+                        .setErrorCallback { Log.d(TAG, "Error") }
+            } else {
+                spotifyAppRemote!!.playerApi
+                        .pause()
+                        .setResultCallback { Log.d(TAG, "paused") }
+                        .setErrorCallback { Log.d(TAG, "Error") }
+            }
+        }
+    }
+
+    class TrackProgressBar(val seekBar: SeekBar?,
                            val handler: Handler = Handler()){
 
         companion object {
@@ -149,36 +259,36 @@ class PlayerFragment : Fragment() {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 spotifyAppRemote!!.playerApi.seekTo(seekBar!!.progress.toLong())
                         .setErrorCallback{
-                            Log.d(TAG, it.message)
+                            Log.d(TAG, "Errrrrrrooooooorrrrrrr")
                         }
             }
         }
 
         init {
-            seekBar.setOnSeekBarChangeListener(seekBarChangeListener)
+            seekBar!!.setOnSeekBarChangeListener(seekBarChangeListener)
         }
 
         private val seekRunnable : Runnable = object : Runnable {
             override fun run() {
-                val progress = seekBar.progress
+                val progress = seekBar!!.progress
                 seekBar.progress = (progress + LOOP_DURATION).toInt()
                 handler.postDelayed(this, LOOP_DURATION)
             }
         }
 
-        private fun setDuration(duration: Long){
-            seekBar.max = duration.toInt()
+        fun setDuration(duration: Long){
+            seekBar!!.max = duration.toInt()
         }
 
-        private fun update(progress : Long){
-            seekBar.progress = progress.toInt()
+        fun update(progress : Long){
+            seekBar!!.progress = progress.toInt()
         }
 
-        private fun pause(){
+        fun pause(){
             handler.removeCallbacks(seekRunnable)
         }
 
-        private fun unpause(){
+        fun unpause(){
             handler.removeCallbacks(seekRunnable)
             handler.postDelayed(seekRunnable, LOOP_DURATION)
         }
