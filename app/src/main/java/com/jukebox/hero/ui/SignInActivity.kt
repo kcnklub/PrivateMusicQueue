@@ -67,7 +67,7 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener{
         super.onStart()
         // check if user is signed in and update UI accordingly.
         val currentUser = auth.currentUser
-        updateUI(currentUser, false)
+        updateUI(currentUser)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -96,7 +96,7 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener{
                     if(it.isSuccessful){
                         Log.d(TAG, "signInWithCredential:success")
                         val user = auth.currentUser
-                        updateUI(user, true)
+                        updateUI(user)
                     } else {
                         Log.w(TAG, "signInWithCredential:failure", it.exception)
                         Toast.makeText(baseContext, "Authentication failed.", Toast.LENGTH_SHORT).show()
@@ -119,7 +119,7 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener{
                     if(it.isSuccessful){
                         Log.d(TAG, "signInWithCreditials:success")
                         val user = auth.currentUser
-                        updateUI(user, true)
+                        updateUI(user)
                     } else {
                         Log.w(TAG, "signInWithCredential:failure", it.exception)
                         Toast.makeText(this, "Authentication Failed.", Toast.LENGTH_LONG).show()
@@ -128,17 +128,11 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener{
                 }
     }
 
-    private fun updateUI(user: FirebaseUser?, manualSignIn: Boolean=false){
+    private fun updateUI(user: FirebaseUser?){
         if(user != null){
             // move to the main activity
-            if (manualSignIn) {
-                val intent = Intent(this, DisplayNameActivity::class.java)
-                startActivity(intent)
-            }
-            else {
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
-            }
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
         }
     }
 
