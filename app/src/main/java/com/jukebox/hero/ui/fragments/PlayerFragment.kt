@@ -19,6 +19,8 @@ import com.jukebox.hero.ui.MainActivity.Companion.REDIRECT_URL
 import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector
 import com.spotify.android.appremote.api.SpotifyAppRemote
+import com.spotify.android.appremote.api.error.CouldNotFindSpotifyApp
+import com.spotify.android.appremote.api.error.NotLoggedInException
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -98,24 +100,32 @@ class PlayerFragment : Fragment() {
 
         val activity = activity as MainActivity
 
-        SpotifyAppRemote.connect(
-                activity.application,
-                ConnectionParams
-                        .Builder(CLIENT_ID)
-                        .setRedirectUri(REDIRECT_URL)
-                        .build(),
-                object : Connector.ConnectionListener{
-                    override fun onConnected(p0: SpotifyAppRemote?) {
-                        spotifyAppRemote = p0!!
-                        onConnected()
-                    }
+        val connectionParams = ConnectionParams.Builder(CLIENT_ID)
+                .setRedirectUri(REDIRECT_URL)
+                .showAuthView(true)
+                .build()
+        val connectionListener = object : Connector.ConnectionListener {
+            override fun onConnected(spotAppRemote: SpotifyAppRemote) {
+                spotifyAppRemote = spotAppRemote
+                Log.e("PlayerFragment","Connected to Spotify!")
+                onConnected()
+            }
 
-                    override fun onFailure(p0: Throwable?) {
-                        Log.d(TAG, "Error $p0")
-                        disconnect()
-                    }
-                }
-        )
+            override fun onFailure(throwable: Throwable) {
+                Log.e("PlayerFragment",throwable.message, throwable)
+                if(throwable is CouldNotFindSpotifyApp)
+                    Log.e("PlayerFragment","Spotify App not installed!")
+                else if(throwable is NotLoggedInException)
+                    Log.e("PlayerFragment","Not Logged in with Spotify!")
+                else
+                    Log.e("PlayerFragment", "Failed to Connect to Spotify!")
+            }
+        }
+
+        //if(spotifyAppRemote == null)
+        //    SpotifyAppRemote.disconnect(spotifyAppRemote)
+        SpotifyAppRemote.setDebugMode(true)
+        SpotifyAppRemote.connect(context, connectionParams, connectionListener)
     }
 
     fun onConnected(){
