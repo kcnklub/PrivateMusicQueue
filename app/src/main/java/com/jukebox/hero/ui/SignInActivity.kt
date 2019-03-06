@@ -135,21 +135,20 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener{
 
     private fun updateUI(user: FirebaseUser?){
         if(user != null){
+            val u = HashMap<String, Any>()
+            u.put("DisplayName", user.displayName.toString())
+            u.put("UserId", user.uid)
+            firestore.collection("Users").document(user.uid)
+                .set(u)
+                    .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
+                    .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
+
+
             // move to the main activity
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
 
-//            val u = HashMap<String, Any>()
-//            u.put("DisplayName", user.displayName.toString())
-//            u.put("UserId", UUID.randomUUID().toString())
-//            firestore.collection("Users")
-//                    .add(u)
-//                    .addOnSuccessListener { documentReference ->
-//                        Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.id)
-//                    }
-//                    .addOnFailureListener { e ->
-//                        Log.w(TAG, "Error adding document", e)
-//                    }
+
         }
     }
 

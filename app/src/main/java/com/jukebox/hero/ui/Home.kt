@@ -1,17 +1,13 @@
 package com.jukebox.hero.ui
 
-import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 
 import com.jukebox.hero.R
-import kotlinx.android.synthetic.main.content_main.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -27,27 +23,25 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  *
  */
-class testOne : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+class Home : Fragment() {
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         Log.d(TAG, "onCreateView")
-        val view = inflater.inflate(R.layout.fragment_test_one, container, false)
+        val view = inflater.inflate(R.layout.fragment_home, container, false)
         //val test : TextView = view!!.findViewById(R.id.test)
         //test.text = param1
         return view
+    }
+
+    fun onHostPartyClicked(v: View) {
+
     }
 
     companion object {
@@ -62,7 +56,7 @@ class testOne : Fragment() {
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-                testOne().apply {
+                Home().apply {
                     arguments = Bundle().apply {
                         putString(ARG_PARAM1, param1)
                         putString(ARG_PARAM2, param2)

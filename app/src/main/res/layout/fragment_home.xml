@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:layout_gravity="center"
     android:background="@color/cat_grayscale_8_90"
-    tools:context=".ui.testOne">
+    tools:context=".ui.Home">
 
     <TextView
         android:id="@+id/tvParty"
@@ -35,8 +35,8 @@
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvParty" />
-        <!--android:onClick=""/>-->
+        app:layout_constraintTop_toBottomOf="@+id/tvParty"
+        android:onClick="onHostPartyClicked" />
 
     <TextView
         android:id="@+id/tvJoinParty"
