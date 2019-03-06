@@ -1,74 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <Button
         android:id="@+id/textSize_decrease_button"
-        android:layout_width="40dp"
-        android:layout_height="44dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="181dp"
         android:text="-"
-        tools:layout_editor_absoluteX="190dp"
-        tools:layout_editor_absoluteY="458dp" />
+        app:layout_constraintBottom_toBottomOf="@+id/textSize_increase_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textSize_increase_button"
+        app:layout_constraintTop_toBottomOf="@+id/appSettings_radioGroup" />
 
     <TextView
         android:id="@+id/jb_settings_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="52dp"
+        android:layout_marginBottom="45dp"
         android:text="@string/juke_box_settings"
-        tools:layout_editor_absoluteX="52dp"
-        tools:layout_editor_absoluteY="52dp" />
+        app:layout_constraintBottom_toTopOf="@+id/accessibility_textview"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/accessibility_textview"
-        android:layout_width="105dp"
-        android:layout_height="25dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="6dp"
+        android:layout_marginBottom="82dp"
         android:text="Accessibility"
-        tools:layout_editor_absoluteX="72dp"
-        tools:layout_editor_absoluteY="71dp" />
+        app:layout_constraintBottom_toTopOf="@+id/playability_textview"
+        app:layout_constraintEnd_toStartOf="@+id/network_discoverable_switch"
+        app:layout_constraintStart_toStartOf="@+id/jb_settings_textview"
+        app:layout_constraintTop_toBottomOf="@+id/jb_settings_textview" />
 
     <Switch
         android:id="@+id/network_discoverable_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="1dp"
         android:text="@string/network_discoverable"
-        tools:layout_editor_absoluteX="183dp"
-        tools:layout_editor_absoluteY="97dp" />
+        app:layout_constraintStart_toStartOf="@+id/code_shareable_switch"
+        app:layout_constraintTop_toBottomOf="@+id/accessibility_textview" />
 
     <Switch
         android:id="@+id/link_shareable_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="2dp"
         android:text="@string/link_shareable"
-        tools:layout_editor_absoluteX="230dp"
-        tools:layout_editor_absoluteY="116dp" />
+        app:layout_constraintBottom_toTopOf="@+id/code_shareable_switch"
+        app:layout_constraintEnd_toEndOf="@+id/network_discoverable_switch"
+        app:layout_constraintTop_toBottomOf="@+id/jb_settings_textview" />
 
     <Switch
         android:id="@+id/code_shareable_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="2dp"
+        android:layout_marginBottom="186dp"
         android:text="@string/digit_code_shareable"
-        tools:layout_editor_absoluteX="179dp"
-        tools:layout_editor_absoluteY="143dp" />
+        app:layout_constraintBottom_toTopOf="@+id/app_settings_textview"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/link_shareable_switch" />
 
     <TextView
         android:id="@+id/app_settings_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="53dp"
+        android:layout_marginBottom="19dp"
         android:text="@string/application_settings"
-        tools:layout_editor_absoluteX="53dp"
-        tools:layout_editor_absoluteY="356dp" />
+        app:layout_constraintBottom_toTopOf="@+id/appSettings_radioGroup"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/code_shareable_switch" />
 
     <TextView
         android:id="@+id/playability_textview"
         android:layout_width="70dp"
-        android:layout_height="26dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="37dp"
+        android:layout_marginBottom="171dp"
         android:text="Playability"
-        tools:layout_editor_absoluteX="72dp"
-        tools:layout_editor_absoluteY="178dp" />
+        app:layout_constraintBottom_toTopOf="@+id/theme_textview"
+        app:layout_constraintEnd_toStartOf="@+id/code_shareable_switch"
+        app:layout_constraintTop_toBottomOf="@+id/accessibility_textview" />
 
     <RadioGroup
         android:id="@+id/playability_radioButtonGroup"
@@ -105,9 +129,10 @@
     <RadioGroup
         android:id="@+id/appSettings_radioGroup"
         android:layout_width="182dp"
-        android:layout_height="64dp"
-        tools:layout_editor_absoluteX="72dp"
-        tools:layout_editor_absoluteY="394dp">
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/textSize_increase_button"
+        app:layout_constraintStart_toStartOf="@+id/theme_textview"
+        app:layout_constraintTop_toBottomOf="@+id/app_settings_textview">
 
         <RadioButton
             android:id="@+id/theme_jukebox_radioButton"
@@ -128,40 +153,57 @@
         android:id="@+id/user_settings_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="37dp"
+        android:layout_marginBottom="30dp"
         android:text="@string/user_settings"
-        tools:layout_editor_absoluteX="52dp"
-        tools:layout_editor_absoluteY="520dp" />
+        app:layout_constraintBottom_toTopOf="@+id/auth_settings_textview"
+        app:layout_constraintEnd_toEndOf="@+id/textSize_decrease_button"
+        app:layout_constraintTop_toBottomOf="@+id/textSize_increase_button" />
 
     <TextView
         android:id="@+id/auth_settings_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="143dp"
         android:text="@string/authentication_settings"
-        tools:layout_editor_absoluteX="52dp"
-        tools:layout_editor_absoluteY="569dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/user_settings_textview"
+        app:layout_constraintTop_toBottomOf="@+id/user_settings_textview" />
 
     <TextView
         android:id="@+id/theme_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="19dp"
+        android:layout_marginBottom="64dp"
         android:text="Theme"
-        tools:layout_editor_absoluteX="72dp"
-        tools:layout_editor_absoluteY="375dp" />
+        app:layout_constraintBottom_toTopOf="@+id/textSize_textview"
+        app:layout_constraintStart_toStartOf="@+id/app_settings_textview"
+        app:layout_constraintTop_toBottomOf="@+id/playability_textview" />
 
     <TextView
         android:id="@+id/textSize_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="77dp"
+        android:layout_marginEnd="13dp"
+        android:layout_marginBottom="254dp"
         android:text="Text Size"
-        tools:layout_editor_absoluteX="77dp"
-        tools:layout_editor_absoluteY="458dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/textSize_increase_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/theme_textview" />
 
     <Button
         android:id="@+id/textSize_increase_button"
-        android:layout_width="40dp"
-        android:layout_height="44dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="3dp"
+        android:layout_marginBottom="18dp"
         android:text="+"
-        tools:layout_editor_absoluteX="147dp"
-        tools:layout_editor_absoluteY="458dp" />
+        app:layout_constraintBottom_toTopOf="@+id/user_settings_textview"
+        app:layout_constraintEnd_toStartOf="@+id/textSize_decrease_button"
+        app:layout_constraintStart_toEndOf="@+id/textSize_textview"
+        app:layout_constraintTop_toBottomOf="@+id/appSettings_radioGroup" />
 
 </android.support.constraint.ConstraintLayout>

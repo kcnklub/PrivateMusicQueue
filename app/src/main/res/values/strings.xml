@@ -127,4 +127,5 @@
     <string name="blacklist">Blacklist</string>
     <string name="jukebox_theme">Jukebox Theme</string>
     <string name="spotify_theme">Spotify Theme</string>
+    <string name="join_button_text">Join</string>
 </resources>

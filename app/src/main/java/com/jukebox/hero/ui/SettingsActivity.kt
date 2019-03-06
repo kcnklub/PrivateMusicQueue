@@ -12,7 +12,7 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(R.layout.content_settings)
     }
 
-    fun increaseText(View: view) {
-
-    }
+//    fun increaseText(View: view) {
+//
+//    }
 }
