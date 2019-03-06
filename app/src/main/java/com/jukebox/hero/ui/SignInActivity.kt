@@ -21,14 +21,17 @@ import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.FirebaseFirestore
 import com.jukebox.hero.R
 import kotlinx.android.synthetic.main.activity_sign_in.*
+import java.util.*
 
 class SignInActivity : AppCompatActivity(), View.OnClickListener{
 
     private lateinit var auth: FirebaseAuth
     private lateinit var callbackManager: CallbackManager
     private lateinit var googleSignInClient: GoogleSignInClient
+    private lateinit var firestore: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +64,8 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener{
                         Log.d(TAG, "facebook:onerror")
                     }
                 })
+
+        firestore = FirebaseFirestore.getInstance()
     }
 
     public override fun onStart() {
@@ -133,6 +138,18 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener{
             // move to the main activity
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
+
+//            val u = HashMap<String, Any>()
+//            u.put("DisplayName", user.displayName.toString())
+//            u.put("UserId", UUID.randomUUID().toString())
+//            firestore.collection("Users")
+//                    .add(u)
+//                    .addOnSuccessListener { documentReference ->
+//                        Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.id)
+//                    }
+//                    .addOnFailureListener { e ->
+//                        Log.w(TAG, "Error adding document", e)
+//                    }
         }
     }
 

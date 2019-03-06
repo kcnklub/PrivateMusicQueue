@@ -14,6 +14,7 @@ import android.widget.ListView
 import android.widget.Toast
 import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.jukebox.hero.Models.PartyQueue
 import com.jukebox.hero.services.PmqPartyQueueService
 import com.jukebox.hero.ui.adapters.PartyQueueAdapter
@@ -29,17 +30,19 @@ import com.spotify.sdk.android.authentication.AuthenticationResponse
 import kaaes.spotify.webapi.android.SpotifyApi
 
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_test_one.*
 
 class MainActivity : AppCompatActivity(){
 
     var spotifyAuthToken = ""
+    var firestore = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        // set up bottom took bar.
+        // set up bottom tool bar.
         viewpager.adapter = SimpleFragmentPagerAdapter(this, supportFragmentManager)
         navigation.setupWithViewPager(viewpager)
 
@@ -51,6 +54,8 @@ class MainActivity : AppCompatActivity(){
 
         navigation.getTabAt(2)?.setIcon(R.drawable.ic_perm_identity_white_24dp)
         navigation.getTabAt(2)?.text = ""
+        // finish setting up bottom tool bar
+
 
         // spotify shit
         val builder = AuthenticationRequest.Builder(CLIENT_ID,
@@ -93,6 +98,10 @@ class MainActivity : AppCompatActivity(){
                 Log.d(TAG, "!!!!!!!!!!AUTH TOKEN: $spotifyAuthToken")
             }
         }
+    }
+
+    fun onHostButtonClick() {
+        firestore.collection("")
     }
 
 
