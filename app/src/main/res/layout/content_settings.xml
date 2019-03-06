@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -20,13 +21,11 @@
         android:id="@+id/jb_settings_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="52dp"
-        android:layout_marginTop="52dp"
-        android:layout_marginBottom="45dp"
+        android:layout_marginEnd="18dp"
+        android:layout_marginBottom="26dp"
         android:text="@string/juke_box_settings"
-        app:layout_constraintBottom_toTopOf="@+id/accessibility_textview"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toTopOf="@+id/network_discoverable_switch"
+        app:layout_constraintEnd_toStartOf="@+id/network_discoverable_switch" />
 
     <TextView
         android:id="@+id/accessibility_textview"
@@ -34,9 +33,9 @@
         android:layout_height="0dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="6dp"
-        android:layout_marginBottom="82dp"
+        android:layout_marginBottom="1dp"
         android:text="Accessibility"
-        app:layout_constraintBottom_toTopOf="@+id/playability_textview"
+        app:layout_constraintBottom_toTopOf="@+id/network_discoverable_switch"
         app:layout_constraintEnd_toStartOf="@+id/network_discoverable_switch"
         app:layout_constraintStart_toStartOf="@+id/jb_settings_textview"
         app:layout_constraintTop_toBottomOf="@+id/jb_settings_textview" />
@@ -45,54 +44,51 @@
         android:id="@+id/network_discoverable_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="1dp"
+        android:layout_marginTop="97dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginBottom="19dp"
         android:text="@string/network_discoverable"
-        app:layout_constraintStart_toStartOf="@+id/code_shareable_switch"
-        app:layout_constraintTop_toBottomOf="@+id/accessibility_textview" />
+        app:layout_constraintBottom_toTopOf="@+id/code_shareable_switch"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Switch
         android:id="@+id/link_shareable_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="2dp"
         android:text="@string/link_shareable"
         app:layout_constraintBottom_toTopOf="@+id/code_shareable_switch"
-        app:layout_constraintEnd_toEndOf="@+id/network_discoverable_switch"
-        app:layout_constraintTop_toBottomOf="@+id/jb_settings_textview" />
+        app:layout_constraintEnd_toEndOf="@+id/network_discoverable_switch" />
 
     <Switch
         android:id="@+id/code_shareable_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="2dp"
-        android:layout_marginBottom="186dp"
+        android:layout_marginBottom="224dp"
         android:text="@string/digit_code_shareable"
-        app:layout_constraintBottom_toTopOf="@+id/app_settings_textview"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/link_shareable_switch" />
+        app:layout_constraintBottom_toTopOf="@+id/appSettings_radioGroup"
+        app:layout_constraintEnd_toEndOf="@+id/link_shareable_switch"
+        app:layout_constraintTop_toBottomOf="@+id/network_discoverable_switch" />
 
     <TextView
         android:id="@+id/app_settings_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="53dp"
         android:layout_marginBottom="19dp"
         android:text="@string/application_settings"
         app:layout_constraintBottom_toTopOf="@+id/appSettings_radioGroup"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/code_shareable_switch" />
+        app:layout_constraintEnd_toEndOf="@+id/theme_textview"
+        app:layout_constraintStart_toEndOf="@+id/theme_textview" />
 
     <TextView
         android:id="@+id/playability_textview"
         android:layout_width="70dp"
-        android:layout_height="0dp"
+        android:layout_height="26dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="37dp"
-        android:layout_marginBottom="171dp"
         android:text="Playability"
-        app:layout_constraintBottom_toTopOf="@+id/theme_textview"
         app:layout_constraintEnd_toStartOf="@+id/code_shareable_switch"
-        app:layout_constraintTop_toBottomOf="@+id/accessibility_textview" />
+        app:layout_constraintTop_toBottomOf="@+id/code_shareable_switch" />
 
     <RadioGroup
         android:id="@+id/playability_radioButtonGroup"
@@ -132,7 +128,7 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/textSize_increase_button"
         app:layout_constraintStart_toStartOf="@+id/theme_textview"
-        app:layout_constraintTop_toBottomOf="@+id/app_settings_textview">
+        app:layout_constraintTop_toBottomOf="@+id/code_shareable_switch">
 
         <RadioButton
             android:id="@+id/theme_jukebox_radioButton"
@@ -153,11 +149,10 @@
         android:id="@+id/user_settings_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="37dp"
-        android:layout_marginBottom="30dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="10dp"
         android:text="@string/user_settings"
-        app:layout_constraintBottom_toTopOf="@+id/auth_settings_textview"
-        app:layout_constraintEnd_toEndOf="@+id/textSize_decrease_button"
+        app:layout_constraintEnd_toStartOf="@+id/textSize_increase_button"
         app:layout_constraintTop_toBottomOf="@+id/textSize_increase_button" />
 
     <TextView
@@ -168,18 +163,18 @@
         android:text="@string/authentication_settings"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/user_settings_textview"
-        app:layout_constraintTop_toBottomOf="@+id/user_settings_textview" />
+        app:layout_constraintTop_toBottomOf="@+id/textSize_increase_button" />
 
     <TextView
         android:id="@+id/theme_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="19dp"
-        android:layout_marginBottom="64dp"
+        android:layout_marginStart="72dp"
+        android:layout_marginEnd="71dp"
         android:text="Theme"
-        app:layout_constraintBottom_toTopOf="@+id/textSize_textview"
-        app:layout_constraintStart_toStartOf="@+id/app_settings_textview"
-        app:layout_constraintTop_toBottomOf="@+id/playability_textview" />
+        app:layout_constraintEnd_toEndOf="@+id/playability_radioButtonGroup"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/app_settings_textview" />
 
     <TextView
         android:id="@+id/textSize_textview"
@@ -187,21 +182,19 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="77dp"
         android:layout_marginEnd="13dp"
-        android:layout_marginBottom="254dp"
         android:text="Text Size"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/textSize_increase_button"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/theme_textview" />
+        app:layout_constraintTop_toBottomOf="@+id/appSettings_radioGroup" />
 
     <Button
         android:id="@+id/textSize_increase_button"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginEnd="3dp"
-        android:layout_marginBottom="18dp"
+        android:layout_marginBottom="67dp"
         android:text="+"
-        app:layout_constraintBottom_toTopOf="@+id/user_settings_textview"
+        app:layout_constraintBottom_toTopOf="@+id/auth_settings_textview"
         app:layout_constraintEnd_toStartOf="@+id/textSize_decrease_button"
         app:layout_constraintStart_toEndOf="@+id/textSize_textview"
         app:layout_constraintTop_toBottomOf="@+id/appSettings_radioGroup" />
