@@ -22,6 +22,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.jukebox.hero.R
 import kotlinx.android.synthetic.main.activity_sign_in.*
 import java.util.*
@@ -139,9 +140,9 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener{
             u.put("DisplayName", user.displayName.toString())
             u.put("UserId", user.uid)
             firestore.collection("Users").document(user.uid)
-                .set(u)
-                    .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
-                    .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
+                .set(u, SetOptions.merge())
+                .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
+                .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
 
 
             // move to the main activity

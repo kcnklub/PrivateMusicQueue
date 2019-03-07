@@ -129,4 +129,12 @@
     <string name="jukebox_theme">Jukebox Theme</string>
     <string name="spotify_theme">Spotify Theme</string>
     <string name="join_button_text">Join</string>
+    <string name="home_not_partying">You are not partying</string>
+    <string name="home_partying">You are partying</string>
+    <string name="home_host_party">Host a Party</string>
+    <string name="join_a_party">Join a Party</string>
+    <string name="room_code_hint">Room Code</string>
+    <string name="room_code_display">Room Code: <b>%1$s</b></string>
+    <string name="nearby_parties">Nearby Parties:</string>
+    <string name="leave_party">Leave Party</string>
 </resources>
