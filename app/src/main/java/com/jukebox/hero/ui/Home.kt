@@ -11,8 +11,11 @@ import android.widget.EditText
 import android.widget.ScrollView
 import android.widget.TextView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.model.Document
 
 import com.jukebox.hero.R
 import kotlinx.android.synthetic.main.fragment_home.*
@@ -158,6 +161,8 @@ class Home : Fragment() {
                         val user = document.data!!
                         val currentParty = user["CurrentParty"].toString()
 
+                        userDoc.set(hashMapOf("CurrentParty" to null))
+
                         if (currentParty.isNotEmpty()) {
                             val partyDoc = firestore.collection("Parties").document(currentParty)
                             partyDoc.get()
@@ -169,15 +174,8 @@ class Home : Fragment() {
                                             users.remove(uid)
 
                                             if (users.isEmpty() || uid == currentParty)
-                                                partyDoc.delete()
-                                                        .addOnSuccessListener { d3 ->
-                                                            if (d3 != null) {
-                                                                Log.d(TAG, "Successfully deleted Party")
-                                                            }
-                                                        }
-                                                        .addOnFailureListener { e ->
-                                                            Log.d(TAG, "Delete failed with ", e)
-                                                        }
+                                                deleteDocument(partyDoc)
+
                                             else {
                                                 party["Users"] = users
                                                 partyDoc.set(party)
@@ -195,6 +193,18 @@ class Home : Fragment() {
                     }
                 }
         }
+    }
+
+    fun deleteDocument(doc: DocumentReference) {
+        doc.delete()
+                .addOnSuccessListener { document ->
+                    if (document != null) {
+                        Log.d(TAG, "Successfully deleted Party")
+                    }
+                }
+                .addOnFailureListener { e ->
+                    Log.d(TAG, "Delete failed with ", e)
+                }
     }
 
     fun swapToNotPartyingElements() {
