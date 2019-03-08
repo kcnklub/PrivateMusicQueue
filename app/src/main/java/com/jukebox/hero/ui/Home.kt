@@ -6,10 +6,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ScrollView
-import android.widget.TextView
+import android.widget.*
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
@@ -20,6 +19,7 @@ import com.google.firebase.firestore.model.Document
 import com.jukebox.hero.R
 import kotlinx.android.synthetic.main.fragment_home.*
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
 // TODO: Rename parameter arguments, choose names that match
@@ -81,11 +81,116 @@ class Home : Fragment() {
         tvRoomCode = view.findViewById(R.id.tvRoomCode)
         tvJoinParty = view.findViewById(R.id.tvJoinParty)
         etRoomCode = view.findViewById(R.id.etRoomCode)
+
         btnJoinParty = view.findViewById(R.id.btnJoinByRoomCode)
+        btnJoinParty.setOnClickListener(View.OnClickListener {
+            onJoinPartyClicked()
+        })
+
         tvNearbyParties = view.findViewById(R.id.tvNearbyParties)
         svParties = view.findViewById(R.id.svNearbyParties)
 
+        getUsersCurrentParty(auth.currentUser!!.uid)
+
         return view
+    }
+
+
+    fun onJoinPartyClicked() {
+        val roomCode: String = etRoomCode.text.toString()
+        val uid = auth.currentUser!!.uid
+        firestore.collection("Parties")
+                .whereEqualTo("RoomCode", roomCode)
+                .get()
+                .addOnSuccessListener { result ->
+                    if (!result.isEmpty) {
+                        val data = result.documents.first().data!!
+
+
+                        addUserToParty(data["HostId"].toString(), uid)
+
+                        setCurrentParty(uid, data["HostId"].toString())
+
+                        getUsersCurrentParty(uid)
+
+                    } else {
+                        Toast.makeText(context, "No parties with that room code.", Toast.LENGTH_SHORT).show()
+                    }
+
+                }
+    }
+
+    fun addUserToParty(party: String, uid: String) {
+        val partyDoc = firestore.collection("Parties").document(party)
+        partyDoc.get()
+            .addOnSuccessListener { doc ->
+                    if (doc != null) {
+                        val data = doc.data!!
+                        val users = data["Users"] as MutableList<Any>
+                        users.add(uid)
+                        data["Users"] = users
+
+                        partyDoc.set(data)
+                                .addOnSuccessListener { partyDoc ->
+                                    if (partyDoc != null) {
+                                        Log.d(TAG,"Added user " + uid + " to party " + party)
+                                    }
+                                }
+                                .addOnFailureListener { exception ->
+                                    Log.e(TAG, "Error adding user to party: ", exception)
+                                }
+                    }
+                }
+
+    }
+
+    fun setCurrentParty(uid: String, party: String) {
+        firestore.collection("Users").document(uid)
+                .update(hashMapOf("CurrentParty" to party as Any))
+                .addOnSuccessListener { userDoc ->
+                    if (userDoc != null) {
+                        Log.d(TAG, "Updated current party to " + party + " for user " + uid)
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.e(TAG, "Error updating current party for user", exception)
+                }
+    }
+
+    fun getUsersCurrentParty(uid : String): HashMap<String, Any>? {
+        var party : HashMap<String, Any>? = null
+        var currentParty:String? = null
+        val user = firestore.collection("Users").document(uid)
+
+        user.get()
+                .addOnSuccessListener { document ->
+                    if (document != null) {
+                        Log.d(TAG, "Successfully pulled user with id " + uid)
+                        currentParty = document.data!!["CurrentParty"] as String?
+
+                        if (currentParty != null) {
+                            val partyDoc = firestore.collection("Parties").document(currentParty.toString())
+                            partyDoc.get()
+                                    .addOnSuccessListener { doc2 ->
+                                        if (doc2 != null) {
+                                            Log.d(TAG, "Successfully pulled party with id " + currentParty.toString())
+                                            party = doc2.data!! as HashMap<String, Any>
+                                            swapToPartyingElements(party!!)
+                                        }
+                                    }
+                        } else {
+                            Log.d(TAG, "currentParty was null")
+                        }
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.d(TAG, "Error checking if user has a party: ", exception)
+                }
+
+
+
+        return party
+
     }
 
 
