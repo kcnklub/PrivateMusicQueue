@@ -1,7 +1,7 @@
 package com.jukebox.hero.ui
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,7 +17,7 @@ import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.model.Document
 
 import com.jukebox.hero.R
-import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.activity_home.*
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
@@ -36,7 +36,7 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  *
  */
-class Home : Fragment() {
+class HomeActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
@@ -53,47 +53,44 @@ class Home : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_home)
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
 
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        Log.d(TAG, "onCreateView")
-        val view = inflater.inflate(R.layout.fragment_home, container, false)
+//        Log.d(TAG, "onCreateView")
+//        val view = inflater.inflate(R.layout.activity_home, container, false)
         //val test : TextView = view!!.findViewById(R.id.test)
         //test.text = param1
 
-        tvParty = view.findViewById(R.id.tvParty)
+        tvParty = findViewById(R.id.tvParty)
 
-        btnHostButton = view.findViewById(R.id.btnCreateParty)
+        btnHostButton = findViewById(R.id.btnCreateParty)
         btnHostButton.setOnClickListener(View.OnClickListener {
             onHostPartyClicked()
         })
 
-        btnLeaveButton = view.findViewById(R.id.btnLeaveParty)
+        btnLeaveButton = findViewById(R.id.btnLeaveParty)
         btnLeaveButton.setOnClickListener(View.OnClickListener {
             onLeavePartyClicked()
         })
 
-        tvRoomCode = view.findViewById(R.id.tvRoomCode)
-        tvJoinParty = view.findViewById(R.id.tvJoinParty)
-        etRoomCode = view.findViewById(R.id.etRoomCode)
+        tvRoomCode = findViewById(R.id.tvRoomCode)
+        tvJoinParty = findViewById(R.id.tvJoinParty)
+        etRoomCode = findViewById(R.id.etRoomCode)
 
-        btnJoinParty = view.findViewById(R.id.btnJoinByRoomCode)
+        btnJoinParty = findViewById(R.id.btnJoinByRoomCode)
         btnJoinParty.setOnClickListener(View.OnClickListener {
             onJoinPartyClicked()
         })
 
-        tvNearbyParties = view.findViewById(R.id.tvNearbyParties)
-        svParties = view.findViewById(R.id.svNearbyParties)
+        tvNearbyParties = findViewById(R.id.tvNearbyParties)
+        svParties = findViewById(R.id.svNearbyParties)
 
         getUsersCurrentParty(auth.currentUser!!.uid)
-
-        return view
     }
+
+
 
 
     fun onJoinPartyClicked() {
@@ -106,7 +103,6 @@ class Home : Fragment() {
                     if (!result.isEmpty) {
                         val data = result.documents.first().data!!
 
-
                         addUserToParty(data["HostId"].toString(), uid)
 
                         setCurrentParty(uid, data["HostId"].toString())
@@ -114,7 +110,7 @@ class Home : Fragment() {
                         getUsersCurrentParty(uid)
 
                     } else {
-                        Toast.makeText(context, "No parties with that room code.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "No parties with that room code.", Toast.LENGTH_SHORT).show()
                     }
 
                 }
@@ -219,8 +215,8 @@ class Home : Fragment() {
                         val user = document.data!!
                         user["CurrentParty"] = uid
                         userDoc.set(user)
-                                .addOnSuccessListener { Log.d(Home.TAG, "DocumentSnapshot successfully written!") }
-                                .addOnFailureListener { e -> Log.w(Home.TAG, "Error writing document", e) }
+                                .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
+                                .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
                     } else {
                         Log.d(TAG, "No such document")
                     }
@@ -231,8 +227,8 @@ class Home : Fragment() {
 
         firestore.collection("Parties").document(auth.currentUser!!.uid)
                 .set(party)
-                    .addOnSuccessListener { Log.d(Home.TAG, "DocumentSnapshot successfully written!") }
-                    .addOnFailureListener { e -> Log.w(Home.TAG, "Error writing document", e) }
+                    .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
+                    .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
         return party
     }
 
@@ -327,24 +323,6 @@ class Home : Fragment() {
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment testOne.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-                Home().apply {
-                    arguments = Bundle().apply {
-                        putString(ARG_PARAM1, param1)
-                        putString(ARG_PARAM2, param2)
-                    }
-                }
-
-        private const val TAG = "testOne"
+        private const val TAG = "Home Activity"
     }
 }
