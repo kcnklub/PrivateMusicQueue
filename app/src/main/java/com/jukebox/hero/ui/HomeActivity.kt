@@ -2,6 +2,7 @@ package com.jukebox.hero.ui
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.DividerItemDecoration
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -51,6 +52,9 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var tvNearbyParties: TextView
     private lateinit var svParties: ScrollView
 
+    private lateinit var divider1: View
+    private lateinit var divider2: View
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
@@ -84,8 +88,11 @@ class HomeActivity : AppCompatActivity() {
             onJoinPartyClicked()
         })
 
-        tvNearbyParties = findViewById(R.id.tvNearbyParties)
-        svParties = findViewById(R.id.svNearbyParties)
+        tvNearbyParties = findViewById(R.id.tvHistory)
+        svParties = findViewById(R.id.svHistory)
+
+        divider1 = findViewById(R.id.divider)
+        divider2 = findViewById(R.id.divider2)
 
         getUsersCurrentParty(auth.currentUser!!.uid)
     }
@@ -102,10 +109,13 @@ class HomeActivity : AppCompatActivity() {
                 .addOnSuccessListener { result ->
                     if (!result.isEmpty) {
                         val data = result.documents.first().data!!
+                        val hostid = data["HostId"].toString()
 
-                        addUserToParty(data["HostId"].toString(), uid)
+                        addUserToParty(hostid, uid)
 
-                        setCurrentParty(uid, data["HostId"].toString())
+                        setCurrentParty(uid, hostid)
+
+                        addPartyToHistory(uid, hostid)
 
                         getUsersCurrentParty(uid)
 
@@ -113,6 +123,44 @@ class HomeActivity : AppCompatActivity() {
                         Toast.makeText(this, "No parties with that room code.", Toast.LENGTH_SHORT).show()
                     }
 
+                }
+    }
+
+    fun addPartyToHistory(uid: String, partyid: String) {
+        val userDoc = firestore.collection("Users").document(uid)
+        userDoc.get()
+                .addOnSuccessListener { doc ->
+                    if (doc != null) {
+                        val data = doc.data!!
+                        if (data.containsKey("History")) {
+                            val history = data["History"] as MutableList<Any>
+
+                            history.add(0, partyid)
+                            for (i in 1..history.size-1) {
+                                if (history[i].toString() == partyid) {
+                                    history.removeAt(i)
+                                    break
+                                }
+                            }
+                            data["History"] = history
+                        } else {
+                            val history = mutableListOf(partyid)
+                            data["History"] = history
+                        }
+
+                        updateUserData(uid, data)
+                    }
+                }
+    }
+
+    fun updateUserData(uid: String, data: Map<String, Any>) {
+        val userDoc = firestore.collection("Users").document(uid)
+        userDoc.update(data)
+                .addOnSuccessListener {
+                    Log.d(TAG, "User object successfully updated.")
+                }
+                .addOnFailureListener { exception ->
+                    Log.e(TAG, "Error updating user object.", exception)
                 }
     }
 
@@ -193,6 +241,7 @@ class HomeActivity : AppCompatActivity() {
     fun onHostPartyClicked() {
         val party = createParty()
         swapToPartyingElements(party)
+
     }
 
     fun onLeavePartyClicked() {
@@ -214,8 +263,11 @@ class HomeActivity : AppCompatActivity() {
                         Log.d(TAG, "DocumentSnapshot data: " + document.data)
                         val user = document.data!!
                         user["CurrentParty"] = uid
-                        userDoc.set(user)
-                                .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
+                        userDoc.update(user)
+                                .addOnSuccessListener {
+                                    Log.d(TAG, "User updated")
+                                    addPartyToHistory(uid, uid)
+                                }
                                 .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
                     } else {
                         Log.d(TAG, "No such document")
@@ -250,6 +302,9 @@ class HomeActivity : AppCompatActivity() {
         btnJoinParty.visibility = View.GONE
         tvNearbyParties.visibility = View.GONE
         svParties.visibility = View.GONE
+
+        divider1.visibility = View.GONE
+        divider2.visibility = View.GONE
     }
 
     fun leaveParty() {
@@ -262,7 +317,7 @@ class HomeActivity : AppCompatActivity() {
                         val user = document.data!!
                         val currentParty = user["CurrentParty"].toString()
 
-                        userDoc.set(hashMapOf("CurrentParty" to null))
+                        userDoc.update(hashMapOf("CurrentParty" to null) as MutableMap<String, Any>)
 
                         if (currentParty.isNotEmpty()) {
                             val partyDoc = firestore.collection("Parties").document(currentParty)
@@ -320,6 +375,9 @@ class HomeActivity : AppCompatActivity() {
         btnJoinParty.visibility = View.VISIBLE
         tvNearbyParties.visibility = View.VISIBLE
         svParties.visibility = View.VISIBLE
+
+        divider1.visibility = View.VISIBLE
+        divider2.visibility = View.VISIBLE
     }
 
     companion object {
