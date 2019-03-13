@@ -33,8 +33,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(){
 
-    var spotifyAuthToken = ""
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -50,7 +48,7 @@ class MainActivity : AppCompatActivity(){
         navigation.getTabAt(1)?.setIcon(R.drawable.ic_play_arrow_white_24dp)
         navigation.getTabAt(1)?.text = ""
 
-        navigation.getTabAt(2)?.setIcon(R.drawable.ic_perm_identity_white_24dp)
+        navigation.getTabAt(2)?.setIcon(R.drawable.ic_search_white_24dp)
         navigation.getTabAt(2)?.text = ""
 
         // spotify shit
@@ -107,5 +105,6 @@ class MainActivity : AppCompatActivity(){
         const val SPOTIFY_REQUEST_CODE = 1337
         const val REDIRECT_URL = "https://google.com"
         const val CLIENT_ID = "a323c442192a47a6a3cd7e93a318f080"
+        var spotifyAuthToken = ""
     }
 }
