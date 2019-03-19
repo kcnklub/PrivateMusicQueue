@@ -91,7 +91,7 @@ class CreatePartyActivity : AppCompatActivity() {
                         if(it != null){
                             val user = it.data!!
                             user["CurrentParty"] = uid
-                            userDoc.set(user)
+                            userDoc.update(user)
                                     .addOnSuccessListener { Log.d(TAG, "DocumentSnapShot Successfully written!") }
                                     .addOnFailureListener{ e -> Log.w(TAG, "Error writting document", e)}
                         } else {
@@ -102,7 +102,7 @@ class CreatePartyActivity : AppCompatActivity() {
                         Log.d(TAG, "get failed with ", it)
                     }
             firestore.collection("Parties").document(auth.currentUser!!.uid)
-                    .set(party)
+                    .update(party)
                     .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
                     .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
 
