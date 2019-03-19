@@ -7,6 +7,8 @@ import android.text.TextUtils.isEmpty
 import android.util.Log
 import android.view.View
 import android.widget.*
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.jukebox.hero.Models.PartyQueue
 import com.jukebox.hero.services.PmqPartyQueueService
 import com.jukebox.hero.util.SaveSharedPreference
@@ -16,18 +18,19 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
 import kotlinx.android.synthetic.main.activity_create_party.*
+import kotlin.random.Random
 
 class CreatePartyActivity : AppCompatActivity() {
 
-    private var disposable : Disposable? = null
-    private val pmqPartyQueueService by lazy {
-        PmqPartyQueueService.create()
-    }
+    private lateinit var auth: FirebaseAuth
+    private lateinit var firestore: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_party)
         setSupportActionBar(toolbar)
+        auth = FirebaseAuth.getInstance()
+        firestore = FirebaseFirestore.getInstance()
 
         val createPartyButton = findViewById<Button>(R.id.create_party)
         createPartyButton.setOnClickListener{
@@ -56,18 +59,6 @@ class CreatePartyActivity : AppCompatActivity() {
         }
 
         if(isPrivate){
-            if (isEmpty(partyPassPhrase)) {
-                partyPassPhraseView.error = getString(R.string.error_required_field)
-                focusView = partyPassPhraseView
-                cancel = true
-            }
-
-            if (isEmpty(partyPassPhraseConfirm)) {
-                partyPassPhraseConfirmView.error = getString(R.string.error_required_field)
-                focusView = partyPassPhraseConfirmView
-                cancel = true
-            }
-
             if ((partyPassPhrase.toString() != partyPassPhraseConfirm.toString())) {
                 partyPassPhraseConfirmView.error = getString(R.string.passphrases_dont_match)
                 focusView = partyPassPhraseConfirmView
@@ -79,31 +70,60 @@ class CreatePartyActivity : AppCompatActivity() {
             focusView.requestFocus()
         } else {
             //create party.
-            disposable = pmqPartyQueueService.createParty(
-                    PartyQueue.Body(SaveSharedPreference.getLoggedInUserId(applicationContext),
-                            partyName.toString(),
-                            partyPassPhrase.toString(),
-                            isPrivate))
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            { result -> kotlin.run {
-                                if(result.message == "success"){
-                                    finishCreation(result.partyQueueId)
-                                } else {
-                                    throw Exception(result.message)
-                                }
-                            }}, { error -> run {
-                                Toast.makeText(this, error.message, Toast.LENGTH_LONG).show()
-                                Log.d("CreatePartyActivity", error.toString())
-                            }}
-                    )
+            val uid = auth.currentUser!!.uid
+            val party = HashMap<String, Any>()
+            party["HostId"] = uid
+            party["User"] = List(1){ uid }
+            party["PartyName"] = partyName.toString()
+            party["isPrivate"] = isPrivate
+            if(isPrivate){
+                if(partyPassPhrase.isEmpty()){
+                    party["RoomCode"] = createRoomCode()
+                } else {
+                    party["RoomCode"] = partyPassPhrase
+                }
+            }
+            party["Queue"] = List(0){}
+
+            val userDoc = firestore.collection("Users").document(uid)
+            userDoc.get()
+                    .addOnSuccessListener {
+                        if(it != null){
+                            val user = it.data!!
+                            user["CurrentParty"] = uid
+                            userDoc.set(user)
+                                    .addOnSuccessListener { Log.d(TAG, "DocumentSnapShot Successfully written!") }
+                                    .addOnFailureListener{ e -> Log.w(TAG, "Error writting document", e)}
+                        } else {
+                            Log.d(TAG, "No such document")
+                        }
+                    }
+                    .addOnFailureListener {
+                        Log.d(TAG, "get failed with ", it)
+                    }
+            firestore.collection("Parties").document(auth.currentUser!!.uid)
+                    .set(party)
+                    .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
+                    .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
+
+            val intent = Intent(this, MainActivity::class.java)
+            finishCreation(uid)
         }
     }
 
-    private fun finishCreation(partyQueueId : Int){
-        val intent = Intent(this, PartyViewActivity::class.java)
+    private fun finishCreation(partyQueueId : String){
+        val intent = Intent(this, MainActivity::class.java)
         intent.putExtra("partyQueueId", partyQueueId)
         startActivity(intent)
+    }
+
+    fun createRoomCode():String {
+        val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        val codeArray = List(5) {chars[Random.nextInt(0, chars.length)]}
+        return codeArray.joinToString("")
+    }
+
+    companion object {
+        const val TAG = "Create Party Activity"
     }
 }
