@@ -102,7 +102,7 @@ class CreatePartyActivity : AppCompatActivity() {
                         Log.d(TAG, "get failed with ", it)
                     }
             firestore.collection("Parties").document(auth.currentUser!!.uid)
-                    .update(party)
+                    .set(party)
                     .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
                     .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
 

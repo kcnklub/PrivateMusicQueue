@@ -82,7 +82,7 @@
         <activity
             android:name="com.spotify.sdk.android.authentication.LoginActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-        <activity android:name=".ui.HomeActivity" />
+        <activity android:name=".ui.PartyManagerActivity" />
     </application>
 
 </manifest>
