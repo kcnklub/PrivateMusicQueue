@@ -73,7 +73,7 @@ class CreatePartyActivity : AppCompatActivity() {
             val uid = auth.currentUser!!.uid
             val party = HashMap<String, Any>()
             party["HostId"] = uid
-            party["User"] = List(1){ uid }
+            party["Users"] = List(1){ uid }
             party["PartyName"] = partyName.toString()
             party["isPrivate"] = isPrivate
             if(isPrivate){
