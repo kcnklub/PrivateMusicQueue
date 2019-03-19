@@ -1,13 +1,13 @@
 package com.jukebox.hero.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DividerItemDecoration
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.*
+import com.facebook.login.LoginManager
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
@@ -71,7 +71,8 @@ class HomeActivity : AppCompatActivity() {
 
         btnHostButton = findViewById(R.id.btnCreateParty)
         btnHostButton.setOnClickListener(View.OnClickListener {
-            onHostPartyClicked()
+            val intent = Intent(this, CreatePartyActivity::class.java)
+            startActivity(intent)
         })
 
         btnLeaveButton = findViewById(R.id.btnLeaveParty)
@@ -378,6 +379,33 @@ class HomeActivity : AppCompatActivity() {
 
         divider1.visibility = View.VISIBLE
         divider2.visibility = View.VISIBLE
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        return when (item.itemId) {
+            R.id.action_settings -> {
+                val intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
+                true
+            }
+            R.id.log_out -> run {
+                FirebaseAuth.getInstance().signOut()
+                LoginManager.getInstance().logOut()
+                val intent = Intent(this, SignInActivity::class.java)
+                startActivity(intent)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     companion object {

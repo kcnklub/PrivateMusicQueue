@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import com.jukebox.hero.ui.fragments.PlayerFragment
+import com.jukebox.hero.ui.fragments.SearchFragment
 import com.jukebox.hero.ui.PartyViewActivity
 
 class SimpleFragmentPagerAdapter(val context: Context,
@@ -14,7 +15,7 @@ class SimpleFragmentPagerAdapter(val context: Context,
         return when(p0){
             0 -> PlayerFragment.newInstance("test", "test")
             1 -> PlayerFragment.newInstance("test2", "test2")
-            else -> PlayerFragment.newInstance("test3", "test3")
+            else -> SearchFragment.newInstance()
         }
     }
 

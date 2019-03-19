@@ -93,7 +93,6 @@ class PlayerFragment : Fragment() {
             param2 = it.getString(ARG_PARAM2)
         }
         val activity = activity as MainActivity
-        activity.spotifyAuthToken
 
         SpotifyAppRemote.setDebugMode(true)
 
