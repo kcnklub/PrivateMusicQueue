@@ -3,16 +3,24 @@ package com.jukebox.hero.ui
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.DividerItemDecoration
 import android.util.Log
 import android.view.*
 import android.widget.*
 import com.facebook.login.LoginManager
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.model.Document
 
 import com.jukebox.hero.R
+import kotlinx.android.synthetic.main.activity_home.*
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
 // TODO: Rename parameter arguments, choose names that match
@@ -29,7 +37,7 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  *
  */
-class PartyManagerActivity : AppCompatActivity() {
+class HomeActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
@@ -49,13 +57,13 @@ class PartyManagerActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_party_manager)
+        setContentView(R.layout.activity_home)
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
 
         // Inflate the layout for this fragment
 //        Log.d(TAG, "onCreateView")
-//        val view = inflater.inflate(R.layout.activity_party_manager, container, false)
+//        val view = inflater.inflate(R.layout.activity_home, container, false)
         //val test : TextView = view!!.findViewById(R.id.test)
         //test.text = param1
 
@@ -401,6 +409,6 @@ class PartyManagerActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val TAG = "Party Manager Activity"
+        private const val TAG = "Home Activity"
     }
 }

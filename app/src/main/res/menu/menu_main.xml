@@ -2,16 +2,12 @@
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="com.jukebox.hero.ui.MainActivity">
-    <item android:id="@+id/party_manager"
-          android:title="Party Manager"
-          android:orderInCategory="1"
-          app:showAsAction="never" />
     <item android:id="@+id/action_settings"
           android:title="@string/action_settings"
-          android:orderInCategory="2"
+          android:orderInCategory="100"
           app:showAsAction="never"/>
     <item android:id="@+id/log_out"
           android:title="@string/logout"
-          android:orderInCategory="3"
+          android:orderInCategory="100"
           app:showAsAction="never"/>
 </menu>

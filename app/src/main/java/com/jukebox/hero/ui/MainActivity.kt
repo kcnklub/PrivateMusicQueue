@@ -83,11 +83,6 @@ class MainActivity : AppCompatActivity(){
                 startActivity(intent)
                 true
             }
-            R.id.party_manager -> {
-                val intent = Intent(this, PartyManagerActivity::class.java)
-                startActivity(intent)
-                true
-            }
             else -> super.onOptionsItemSelected(item)
         }
     }
