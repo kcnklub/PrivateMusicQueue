@@ -1,13 +1,24 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto"
-      xmlns:tools="http://schemas.android.com/tools"
-      tools:context="com.jukebox.hero.ui.MainActivity">
-    <item android:id="@+id/action_settings"
-          android:title="@string/action_settings"
-          android:orderInCategory="100"
-          app:showAsAction="never"/>
-    <item android:id="@+id/log_out"
-          android:title="@string/logout"
-          android:orderInCategory="100"
-          app:showAsAction="never"/>
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.jukebox.hero.ui.MainActivity">
+    <item
+        android:id="@+id/party_manager"
+        android:orderInCategory="10"
+        android:title="@string/party_manager"
+        app:showAsAction="never" />
+    <item android:id="@+id/main_activity"
+        android:orderInCategory="15"
+        android:title="@string/main_activity"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="20"
+        android:title="@string/action_settings"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/log_out"
+        android:orderInCategory="30"
+        android:title="@string/logout"
+        app:showAsAction="never" />
 </menu>

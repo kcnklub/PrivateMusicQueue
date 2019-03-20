@@ -25,13 +25,13 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tvRoomCode"
+        android:id="@+id/tvPartyName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
-        android:text="@string/room_code_display"
+        android:text="@string/party_name_display"
         android:textAlignment="center"
         android:textColor="@color/browser_actions_bg_grey"
         android:textSize="24sp"
@@ -53,7 +53,7 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvRoomCode" />
+        app:layout_constraintTop_toBottomOf="@+id/tvPartyName" />
 
     <Button
         android:id="@+id/btnCreateParty"
@@ -86,15 +86,15 @@
         app:layout_constraintTop_toBottomOf="@+id/divider" />
 
     <EditText
-        android:id="@+id/etRoomCode"
-        android:layout_width="280dp"
+        android:id="@+id/etUserCode"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:ems="10"
-        android:hint="@string/room_code_hint"
-        android:inputType="textPersonName"
+        android:hint="@string/user_code_hint"
+        android:inputType="number"
         android:textColor="@color/browser_actions_bg_grey"
         android:textColorHint="@color/browser_actions_bg_grey"
         android:textSize="24sp"
@@ -102,17 +102,35 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvJoinParty" />
 
+    <EditText
+        android:id="@+id/etPassword"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:ems="10"
+        android:hint="@string/party_password_hint"
+        android:inputType="textPassword"
+        android:textColor="@color/browser_actions_bg_grey"
+        android:textColorHint="@color/browser_actions_bg_grey"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toStartOf="@+id/btnJoinByRoomCode"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etUserCode" />
+
     <Button
         android:id="@+id/btnJoinByRoomCode"
-        android:layout_width="88dp"
-        android:layout_height="53dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:background="@color/colorSecondary"
         android:text="@string/join_button_text"
+        app:layout_constraintBottom_toBottomOf="@+id/etPassword"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/etRoomCode"
+        app:layout_constraintStart_toEndOf="@+id/etUserCode"
         app:layout_constraintTop_toBottomOf="@+id/tvJoinParty" />
 
     <TextView
@@ -171,6 +189,6 @@
         android:background="@color/browser_actions_title_color"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etRoomCode" />
+        app:layout_constraintTop_toBottomOf="@+id/etPassword" />
 
 </android.support.constraint.ConstraintLayout>

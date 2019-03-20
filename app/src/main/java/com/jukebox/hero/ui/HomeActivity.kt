@@ -3,24 +3,16 @@ package com.jukebox.hero.ui
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.DividerItemDecoration
 import android.util.Log
 import android.view.*
 import android.widget.*
 import com.facebook.login.LoginManager
-import com.google.android.gms.tasks.Task
-import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
-import com.google.firebase.firestore.model.Document
 
 import com.jukebox.hero.R
-import kotlinx.android.synthetic.main.activity_home.*
 import java.util.*
-import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
 // TODO: Rename parameter arguments, choose names that match
@@ -45,9 +37,10 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var tvParty: TextView
     private lateinit var btnHostButton : Button
     private lateinit var btnLeaveButton : Button
-    private lateinit var tvRoomCode: TextView
+    private lateinit var tvPartyName: TextView
     private lateinit var tvJoinParty: TextView
-    private lateinit var etRoomCode: EditText
+    private lateinit var etUserCode: EditText
+    private lateinit var etPassword: EditText
     private lateinit var btnJoinParty: Button
     private lateinit var tvNearbyParties: TextView
     private lateinit var svParties: ScrollView
@@ -80,9 +73,10 @@ class HomeActivity : AppCompatActivity() {
             onLeavePartyClicked()
         })
 
-        tvRoomCode = findViewById(R.id.tvRoomCode)
+        tvPartyName = findViewById(R.id.tvPartyName)
         tvJoinParty = findViewById(R.id.tvJoinParty)
-        etRoomCode = findViewById(R.id.etRoomCode)
+        etUserCode = findViewById(R.id.etUserCode)
+        etPassword = findViewById(R.id.etPassword)
 
         btnJoinParty = findViewById(R.id.btnJoinByRoomCode)
         btnJoinParty.setOnClickListener(View.OnClickListener {
@@ -100,12 +94,13 @@ class HomeActivity : AppCompatActivity() {
 
 
 
-
     fun onJoinPartyClicked() {
-        val roomCode: String = etRoomCode.text.toString()
+        val userCode: String = etUserCode.text.toString()
+        val password: String = etPassword.text.toString()
         val uid = auth.currentUser!!.uid
         firestore.collection("Parties")
-                .whereEqualTo("RoomCode", roomCode)
+                .whereEqualTo("UserCode", userCode)
+                .whereEqualTo("Password", password)
                 .get()
                 .addOnSuccessListener { result ->
                     if (!result.isEmpty) {
@@ -121,7 +116,7 @@ class HomeActivity : AppCompatActivity() {
                         getUsersCurrentParty(uid)
 
                     } else {
-                        Toast.makeText(this, "No parties with that room code.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "No parties with that information.", Toast.LENGTH_SHORT).show()
                     }
 
                 }
@@ -204,20 +199,23 @@ class HomeActivity : AppCompatActivity() {
 
     fun getUsersCurrentParty(uid : String): HashMap<String, Any>? {
         var party : HashMap<String, Any>? = null
-        var currentParty:String? = null
-        val user = firestore.collection("Users").document(uid)
+        val userDoc = firestore.collection("Users").document(uid)
 
-        user.get()
+        userDoc.get()
                 .addOnSuccessListener { document ->
-                    if (document != null) {
+                    if (document.exists()) {
                         Log.d(TAG, "Successfully pulled user with id " + uid)
-                        currentParty = document.data!!["CurrentParty"] as String?
+                        val currentParty = if (document.data!!.keys.contains("CurrentParty")) {
+                            document.data!!["CurrentParty"] as String?
+                        } else {
+                            null
+                        }
 
                         if (currentParty != null) {
                             val partyDoc = firestore.collection("Parties").document(currentParty.toString())
                             partyDoc.get()
                                     .addOnSuccessListener { doc2 ->
-                                        if (doc2 != null) {
+                                        if (doc2.exists()) {
                                             Log.d(TAG, "Successfully pulled party with id " + currentParty.toString())
                                             party = doc2.data!! as HashMap<String, Any>
                                             swapToPartyingElements(party!!)
@@ -294,12 +292,13 @@ class HomeActivity : AppCompatActivity() {
     fun swapToPartyingElements(party: HashMap<String, Any>) {
         btnHostButton.visibility = View.GONE
         tvParty.text = getText(R.string.home_partying)
-        tvRoomCode.visibility = View.VISIBLE
-        tvRoomCode.text = getString(R.string.room_code_display, party["RoomCode"].toString())
+        tvPartyName.visibility = View.VISIBLE
+        tvPartyName.text = getString(R.string.party_name_display, party["RoomCode"].toString())
         btnLeaveButton.visibility = View.VISIBLE
 
         tvJoinParty.visibility = View.GONE
-        etRoomCode.visibility = View.GONE
+        etUserCode.visibility = View.GONE
+        etPassword.visibility = View.GONE
         btnJoinParty.visibility = View.GONE
         tvNearbyParties.visibility = View.GONE
         svParties.visibility = View.GONE
@@ -367,12 +366,13 @@ class HomeActivity : AppCompatActivity() {
     fun swapToNotPartyingElements() {
         btnHostButton.visibility = View.VISIBLE
         tvParty.text = getText(R.string.home_not_partying)
-        tvRoomCode.visibility = View.GONE
+        tvPartyName.visibility = View.GONE
 
         btnLeaveButton.visibility = View.GONE
 
         tvJoinParty.visibility = View.VISIBLE
-        etRoomCode.visibility = View.VISIBLE
+        etUserCode.visibility = View.VISIBLE
+        etPassword.visibility = View.VISIBLE
         btnJoinParty.visibility = View.VISIBLE
         tvNearbyParties.visibility = View.VISIBLE
         svParties.visibility = View.VISIBLE
@@ -401,6 +401,11 @@ class HomeActivity : AppCompatActivity() {
                 FirebaseAuth.getInstance().signOut()
                 LoginManager.getInstance().logOut()
                 val intent = Intent(this, SignInActivity::class.java)
+                startActivity(intent)
+                true
+            }
+            R.id.main_activity -> {
+                val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
                 true
             }

@@ -133,8 +133,11 @@
     <string name="home_partying">You are partying</string>
     <string name="home_host_party">Host a Party</string>
     <string name="join_a_party">Join a Party</string>
-    <string name="room_code_hint">Room Code</string>
-    <string name="room_code_display">Room Code: <b>%1$s</b></string>
+    <string name="user_code_hint">User Code: 0000</string>
+    <string name="party_password_hint">Password</string>
+    <string name="party_name_display">Party Name: <b>%1$s</b></string>
     <string name="nearby_parties">Nearby Parties:</string>
     <string name="leave_party">Leave Party</string>
+    <string name="party_manager">Party Manager</string>
+    <string name="main_activity">Party</string>
 </resources>

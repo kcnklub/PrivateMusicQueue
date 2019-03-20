@@ -90,10 +90,10 @@ class CreatePartyActivity : AppCompatActivity() {
                     .addOnSuccessListener {
                         if(it != null){
                             val user = it.data!!
-                            user["CurrentParty"] = uid
+                            user["CurrentParty"] = uid + partyName.toString().replace(" ", "")
                             userDoc.update(user)
                                     .addOnSuccessListener { Log.d(TAG, "DocumentSnapShot Successfully written!") }
-                                    .addOnFailureListener{ e -> Log.w(TAG, "Error writting document", e)}
+                                    .addOnFailureListener{ e -> Log.w(TAG, "Error writing document", e)}
                         } else {
                             Log.d(TAG, "No such document")
                         }
@@ -101,12 +101,11 @@ class CreatePartyActivity : AppCompatActivity() {
                     .addOnFailureListener {
                         Log.d(TAG, "get failed with ", it)
                     }
-            firestore.collection("Parties").document(auth.currentUser!!.uid)
-                    .update(party)
+            firestore.collection("Parties").document(auth.currentUser!!.uid + partyName.toString().replace(" ", ""))
+                    .set(party)
                     .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
                     .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
 
-            val intent = Intent(this, MainActivity::class.java)
             finishCreation(uid)
         }
     }
