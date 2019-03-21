@@ -164,6 +164,7 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener{
                                         u["UserCode"] = userCode
                                         u["CurrentParty"] = null
                                         u["History"] = mutableListOf<String>()
+                                        u["HostedParties"] = mutableListOf<String>()
 
                                         userDoc.set(u)
                                                 .addOnSuccessListener {
