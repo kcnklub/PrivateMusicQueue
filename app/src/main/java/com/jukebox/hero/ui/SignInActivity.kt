@@ -23,6 +23,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.Query.Direction
 import com.jukebox.hero.R
 import kotlinx.android.synthetic.main.activity_sign_in.*
 import java.util.*
@@ -136,19 +137,56 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener{
 
     private fun updateUI(user: FirebaseUser?){
         if(user != null){
-            val u = HashMap<String, Any>()
-            u.put("DisplayName", user.displayName.toString())
-            u.put("UserId", user.uid)
-            firestore.collection("Users").document(user.uid)
-                .set(u, SetOptions.merge())
-                .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
-                .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
+
+            val userDoc = firestore.collection("Users").document(user.uid)
+            userDoc.get()
+                    .addOnSuccessListener {
+                        if (it.exists()) {
+                            Log.d(TAG, "User document already existed")
+                            val intent = Intent(this, HomeActivity::class.java)
+                            startActivity(intent)
+                        }
+                        else {
+                            firestore.collection("Users").orderBy("UserCode", Direction.DESCENDING).limit(1)
+                                    .get()
+                                    .addOnSuccessListener { querySnapshot ->
+                                        // get a new unique usercode
+                                        var userCode = if (querySnapshot != null) {
+                                            querySnapshot.documents.first().data!!["UserCode"].toString()
+                                        } else {
+                                            "0000"
+                                        }
+                                        userCode = ((userCode.toInt()) + 1).toString().padStart(4, '0')
+
+                                        val u = HashMap<String, Any?>()
+                                        u["DisplayName"] = user.displayName.toString()
+                                        u["UserId"] = user.uid
+                                        u["UserCode"] = userCode
+                                        u["CurrentParty"] = null
+                                        u["History"] = mutableListOf<String>()
+                                        u["HostedParties"] = mutableListOf<String>()
+
+                                        userDoc.set(u)
+                                                .addOnSuccessListener {
+                                                    val intent = Intent(this, HomeActivity::class.java)
+                                                    startActivity(intent)
+                                                    Log.d(TAG, "New user created on sign in")
+                                                }
+                                                .addOnFailureListener { Log.e(TAG, "Error creating user document on sign in", it) }
+                                    }
+
+
+                        }
+                    }
+                    .addOnFailureListener {
+                        Log.e(TAG, "!!! Error getting user document on sign in", it)
+                    }
+
 
 
             // move to the main activity
             //val intent = Intent(this, MainActivity::class.java)
-            val intent = Intent(this, HomeActivity::class.java)
-            startActivity(intent)
+
 
 
         }

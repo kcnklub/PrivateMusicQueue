@@ -3,23 +3,17 @@ package com.jukebox.hero.ui
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.text.TextUtils
 import android.util.Log
 import android.view.*
 import android.widget.*
 import com.facebook.login.LoginManager
-import com.google.android.gms.tasks.Task
-import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
-import com.google.firebase.firestore.model.Document
 
 import com.jukebox.hero.R
-import kotlinx.android.synthetic.main.activity_home.*
 import java.util.*
-import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
 // TODO: Rename parameter arguments, choose names that match
@@ -42,14 +36,21 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var firestore: FirebaseFirestore
 
     private lateinit var tvParty: TextView
+    private lateinit var etPartyName: EditText
     private lateinit var btnHostButton : Button
     private lateinit var btnLeaveButton : Button
+
+    private lateinit var tvPartyName: TextView
     private lateinit var tvRoomCode: TextView
+
     private lateinit var tvJoinParty: TextView
     private lateinit var etRoomCode: EditText
     private lateinit var btnJoinParty: Button
     private lateinit var tvNearbyParties: TextView
     private lateinit var svParties: ScrollView
+
+    private lateinit var divider1: View
+    private lateinit var divider2: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,10 +66,11 @@ class HomeActivity : AppCompatActivity() {
 
         tvParty = findViewById(R.id.tvParty)
 
+        etPartyName = findViewById(R.id.etPartyName)
+
         btnHostButton = findViewById(R.id.btnCreateParty)
         btnHostButton.setOnClickListener(View.OnClickListener {
-            val intent = Intent(this, CreatePartyActivity::class.java)
-            startActivity(intent)
+            attemptCreateParty()
         })
 
         btnLeaveButton = findViewById(R.id.btnLeaveParty)
@@ -76,7 +78,9 @@ class HomeActivity : AppCompatActivity() {
             onLeavePartyClicked()
         })
 
+        tvPartyName = findViewById(R.id.tvPartyName)
         tvRoomCode = findViewById(R.id.tvRoomCode)
+
         tvJoinParty = findViewById(R.id.tvJoinParty)
         etRoomCode = findViewById(R.id.etRoomCode)
 
@@ -85,12 +89,14 @@ class HomeActivity : AppCompatActivity() {
             onJoinPartyClicked()
         })
 
-        tvNearbyParties = findViewById(R.id.tvNearbyParties)
-        svParties = findViewById(R.id.svNearbyParties)
+        tvNearbyParties = findViewById(R.id.tvHistory)
+        svParties = findViewById(R.id.svHistory)
+
+        divider1 = findViewById(R.id.divider)
+        divider2 = findViewById(R.id.divider2)
 
         getUsersCurrentParty(auth.currentUser!!.uid)
     }
-
 
 
 
@@ -103,17 +109,62 @@ class HomeActivity : AppCompatActivity() {
                 .addOnSuccessListener { result ->
                     if (!result.isEmpty) {
                         val data = result.documents.first().data!!
+                        val hostid = data["HostId"].toString()
+                        val name = data["PartyName"].toString()
+                        val partyid = hostid + name.replace(" ", "")
 
-                        addUserToParty(data["HostId"].toString(), uid)
+                        addUserToParty(partyid, uid)
 
-                        setCurrentParty(uid, data["HostId"].toString())
+                        setCurrentParty(uid, partyid)
+
+                        addPartyToHistory(uid, partyid)
 
                         getUsersCurrentParty(uid)
 
+                        finishCreation(partyid)
+
                     } else {
-                        Toast.makeText(this, "No parties with that room code.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "No parties with that information.", Toast.LENGTH_SHORT).show()
                     }
 
+                }
+    }
+
+    fun addPartyToHistory(uid: String, partyid: String) {
+        val userDoc = firestore.collection("Users").document(uid)
+        userDoc.get()
+                .addOnSuccessListener { doc ->
+                    if (doc != null) {
+                        val data = doc.data!!
+                        if (data.containsKey("History")) {
+                            val history = data["History"] as MutableList<Any>
+
+                            history.add(0, partyid)
+                            for (i in 1..history.size-1) {
+                                if (history[i].toString() == partyid) {
+                                    history.removeAt(i)
+                                    break
+                                }
+                            }
+                            data["History"] = history
+                        } else {
+                            val history = mutableListOf(partyid)
+                            data["History"] = history
+                        }
+
+                        updateUserData(uid, data)
+                    }
+                }
+    }
+
+    fun updateUserData(uid: String, data: Map<String, Any>) {
+        val userDoc = firestore.collection("Users").document(uid)
+        userDoc.update(data)
+                .addOnSuccessListener {
+                    Log.d(TAG, "User object successfully updated.")
+                }
+                .addOnFailureListener { exception ->
+                    Log.e(TAG, "Error updating user object.", exception)
                 }
     }
 
@@ -121,7 +172,7 @@ class HomeActivity : AppCompatActivity() {
         val partyDoc = firestore.collection("Parties").document(party)
         partyDoc.get()
             .addOnSuccessListener { doc ->
-                    if (doc != null) {
+                    if (doc.exists()) {
                         val data = doc.data!!
                         val users = data["Users"] as MutableList<Any>
                         users.add(uid)
@@ -156,20 +207,23 @@ class HomeActivity : AppCompatActivity() {
 
     fun getUsersCurrentParty(uid : String): HashMap<String, Any>? {
         var party : HashMap<String, Any>? = null
-        var currentParty:String? = null
-        val user = firestore.collection("Users").document(uid)
+        val userDoc = firestore.collection("Users").document(uid)
 
-        user.get()
+        userDoc.get()
                 .addOnSuccessListener { document ->
-                    if (document != null) {
+                    if (document.exists()) {
                         Log.d(TAG, "Successfully pulled user with id " + uid)
-                        currentParty = document.data!!["CurrentParty"] as String?
+                        val currentParty = if (document.data!!.keys.contains("CurrentParty")) {
+                            document.data!!["CurrentParty"] as String?
+                        } else {
+                            null
+                        }
 
                         if (currentParty != null) {
                             val partyDoc = firestore.collection("Parties").document(currentParty.toString())
                             partyDoc.get()
                                     .addOnSuccessListener { doc2 ->
-                                        if (doc2 != null) {
+                                        if (doc2.exists()) {
                                             Log.d(TAG, "Successfully pulled party with id " + currentParty.toString())
                                             party = doc2.data!! as HashMap<String, Any>
                                             swapToPartyingElements(party!!)
@@ -177,6 +231,7 @@ class HomeActivity : AppCompatActivity() {
                                     }
                         } else {
                             Log.d(TAG, "currentParty was null")
+                            swapToNotPartyingElements()
                         }
                     }
                 }
@@ -190,47 +245,74 @@ class HomeActivity : AppCompatActivity() {
 
     }
 
+    private fun attemptCreateParty(){
 
-    fun onHostPartyClicked() {
-        val party = createParty()
-        swapToPartyingElements(party)
-    }
+        val partyName = etPartyName.text
 
-    fun onLeavePartyClicked() {
-        leaveParty()
-        swapToNotPartyingElements()
-    }
+        var cancel = false
+        var focusView: View = etPartyName
 
-    fun createParty(): HashMap<String, Any> {
-        val uid = auth.currentUser!!.uid
-        val party = HashMap<String, Any>()
-        party.put("HostId", uid)
-        party.put("Users", List(1) { uid })
-        party.put("RoomCode", createRoomCode())
+        if (TextUtils.isEmpty(partyName)) {
+            Toast.makeText(this, "Party name cannot be empty", Toast.LENGTH_SHORT).show()
+        } else {
+            //create party.
+            val uid = auth.currentUser!!.uid
+            val party = HashMap<String, Any>()
+            party["HostId"] = uid
+            party["Users"] = List(1){ uid }
+            party["PartyName"] = partyName.toString()
+            party["Queue"] = List(0){}
+            val partyid = partyName.toString().replace(" ", "")
 
-        val userDoc = firestore.collection("Users").document(uid)
-        userDoc.get()
-                .addOnSuccessListener { document ->
-                    if (document != null) {
-                        Log.d(TAG, "DocumentSnapshot data: " + document.data)
-                        val user = document.data!!
-                        user["CurrentParty"] = uid
-                        userDoc.set(user)
-                                .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
-                                .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
-                    } else {
-                        Log.d(TAG, "No such document")
+            firestore.collection("Parties")
+                    .get()
+                    .addOnSuccessListener { query ->
+                        val roomCodes = mutableListOf<String>()
+                        for (doc in query.documents) {
+                            roomCodes.add(doc.data!!["RoomCode"].toString())
+                        }
+
+                        do {
+                            party["RoomCode"] = createRoomCode()
+                        } while (roomCodes.contains(party["RoomCode"].toString()))
+
+                        val userDoc = firestore.collection("Users").document(uid)
+                        userDoc.get()
+                                .addOnSuccessListener {
+                                    if(it.exists()){
+                                        val user = it.data!!
+                                        if (!(user["HostedParties"] as List<String>).contains(partyid)) {
+                                            user["CurrentParty"] = uid + partyid
+
+                                            val hostedParties = user["HostedParties"] as MutableList<String>
+                                            hostedParties.add(partyName.toString())
+                                            user["HostedParties"] = hostedParties
+
+                                            userDoc.update(user)
+                                                    .addOnSuccessListener { Log.d(TAG, "DocumentSnapShot Successfully written!") }
+                                                    .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
+
+                                            val partyDoc = firestore.collection("Parties").document(auth.currentUser!!.uid + partyName.toString().replace(" ", ""))
+                                            partyDoc.set(party)
+                                                    .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
+                                                    .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
+
+                                            finishCreation(uid + partyid)
+                                        } else {
+                                            Toast.makeText(this, "You already have an active party with that name.", Toast.LENGTH_LONG).show()
+                                        }
+                                    } else {
+                                        Log.d(TAG, "No such document")
+                                    }
+                                }
+                                .addOnFailureListener {
+                                    Log.d(TAG, "get failed with ", it)
+                                }
                     }
-                }
-                .addOnFailureListener { exception ->
-                    Log.d(TAG, "get failed with ", exception)
-                }
-
-        firestore.collection("Parties").document(auth.currentUser!!.uid)
-                .set(party)
-                    .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
-                    .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
-        return party
+                    .addOnFailureListener { exc ->
+                        Log.e(TAG, "Error getting room code list", exc)
+                    }
+        }
     }
 
     fun createRoomCode():String {
@@ -239,11 +321,32 @@ class HomeActivity : AppCompatActivity() {
         return codeArray.joinToString("")
     }
 
+    private fun finishCreation(partyQueueId : String){
+        val intent = Intent(this, MainActivity::class.java)
+        intent.putExtra("partyQueueId", partyQueueId)
+        startActivity(intent)
+    }
+
+    fun onLeavePartyClicked() {
+        leaveParty()
+        swapToNotPartyingElements()
+    }
+
+
+
     fun swapToPartyingElements(party: HashMap<String, Any>) {
+        tvParty.visibility = View.VISIBLE
         btnHostButton.visibility = View.GONE
         tvParty.text = getText(R.string.home_partying)
+
+        etPartyName.visibility = View.GONE
+
+        tvPartyName.visibility = View.VISIBLE
+        tvPartyName.text = getString(R.string.party_name_display, party["PartyName"].toString())
+
         tvRoomCode.visibility = View.VISIBLE
-        tvRoomCode.text = getString(R.string.room_code_display, party["RoomCode"].toString())
+        tvRoomCode.text = getString(R.string.party_room_code_display, party["RoomCode"].toString())
+
         btnLeaveButton.visibility = View.VISIBLE
 
         tvJoinParty.visibility = View.GONE
@@ -251,6 +354,9 @@ class HomeActivity : AppCompatActivity() {
         btnJoinParty.visibility = View.GONE
         tvNearbyParties.visibility = View.GONE
         svParties.visibility = View.GONE
+
+        divider1.visibility = View.GONE
+        divider2.visibility = View.GONE
     }
 
     fun leaveParty() {
@@ -263,7 +369,7 @@ class HomeActivity : AppCompatActivity() {
                         val user = document.data!!
                         val currentParty = user["CurrentParty"].toString()
 
-                        userDoc.set(hashMapOf("CurrentParty" to null))
+                        userDoc.update(hashMapOf("CurrentParty" to null) as MutableMap<String, Any>)
 
                         if (currentParty.isNotEmpty()) {
                             val partyDoc = firestore.collection("Parties").document(currentParty)
@@ -275,13 +381,13 @@ class HomeActivity : AppCompatActivity() {
                                             val users = party["Users"] as MutableList<Any>
                                             users.remove(uid)
 
-                                            if (users.isEmpty() || uid == currentParty)
-                                                deleteDocument(partyDoc)
+                                            //if (users.isEmpty() || uid == currentParty)
+                                                //deleteDocument(partyDoc)
 
-                                            else {
+                                            //else {
                                                 party["Users"] = users
                                                 partyDoc.set(party)
-                                            }
+                                            //}
 
                                         } else {
                                             Log.d(TAG, "No such document")
@@ -297,21 +403,14 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
-    fun deleteDocument(doc: DocumentReference) {
-        doc.delete()
-                .addOnSuccessListener { document ->
-                    if (document != null) {
-                        Log.d(TAG, "Successfully deleted Party")
-                    }
-                }
-                .addOnFailureListener { e ->
-                    Log.d(TAG, "Delete failed with ", e)
-                }
-    }
-
     fun swapToNotPartyingElements() {
-        btnHostButton.visibility = View.VISIBLE
+        tvParty.visibility = View.VISIBLE
         tvParty.text = getText(R.string.home_not_partying)
+
+        etPartyName.visibility = View.VISIBLE
+        btnHostButton.visibility = View.VISIBLE
+
+        tvPartyName.visibility = View.GONE
         tvRoomCode.visibility = View.GONE
 
         btnLeaveButton.visibility = View.GONE
@@ -321,6 +420,9 @@ class HomeActivity : AppCompatActivity() {
         btnJoinParty.visibility = View.VISIBLE
         tvNearbyParties.visibility = View.VISIBLE
         svParties.visibility = View.VISIBLE
+
+        divider1.visibility = View.VISIBLE
+        divider2.visibility = View.VISIBLE
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -343,6 +445,11 @@ class HomeActivity : AppCompatActivity() {
                 FirebaseAuth.getInstance().signOut()
                 LoginManager.getInstance().logOut()
                 val intent = Intent(this, SignInActivity::class.java)
+                startActivity(intent)
+                true
+            }
+            R.id.main_activity -> {
+                val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
                 true
             }
