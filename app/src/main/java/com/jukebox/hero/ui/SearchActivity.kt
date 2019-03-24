@@ -7,10 +7,12 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ListView
 import android.widget.ProgressBar
+import android.widget.Toast
 import com.jukebox.hero.R
 import com.jukebox.hero.ui.MainActivity.Companion.CLIENT_ID
 import com.jukebox.hero.ui.adapters.TrackAdapter
@@ -23,6 +25,7 @@ import kaaes.spotify.webapi.android.SpotifyCallback
 import kaaes.spotify.webapi.android.SpotifyError
 import kaaes.spotify.webapi.android.models.Track
 import kaaes.spotify.webapi.android.models.TracksPager
+import kotlinx.android.synthetic.main.listview_song_item_row.view.*
 
 class SearchActivity : AppCompatActivity() {
 
@@ -39,7 +42,6 @@ class SearchActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
-
 
         linearLayoutManager = LinearLayoutManager(this)
         val songlistview: RecyclerView = findViewById(R.id.search_list)
