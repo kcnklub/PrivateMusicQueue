@@ -10,8 +10,6 @@ import retrofit2.http.Query
 
 interface PmqSongService {
 
-    @GET("getSongForParty")
-    fun getSongsForParty(@Query("queueId") queueId : Int) : Observable<List<Song.Song>>
 
     companion object {
         fun create() : PmqSongService {

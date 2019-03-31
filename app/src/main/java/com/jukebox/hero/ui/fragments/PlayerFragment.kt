@@ -17,9 +17,9 @@ import android.widget.SeekBar
 import com.google.gson.GsonBuilder
 
 import com.jukebox.hero.R
-import com.jukebox.hero.ui.MainActivity
-import com.jukebox.hero.ui.MainActivity.Companion.CLIENT_ID
-import com.jukebox.hero.ui.MainActivity.Companion.REDIRECT_URL
+import com.jukebox.hero.ui.JukeBoxActivity
+import com.jukebox.hero.ui.JukeBoxActivity.Companion.CLIENT_ID
+import com.jukebox.hero.ui.JukeBoxActivity.Companion.REDIRECT_URL
 import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector
 import com.spotify.android.appremote.api.SpotifyAppRemote
@@ -30,7 +30,6 @@ import com.spotify.protocol.types.Capabilities
 import com.spotify.protocol.types.Image
 import com.spotify.protocol.types.PlayerContext
 import com.spotify.protocol.types.PlayerState
-import java.util.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -41,6 +40,8 @@ private const val ARG_PARAM2 = "param2"
 class PlayerFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
+
+    var isOwner : Boolean = false
 
 
     var playPauseButton : AppCompatImageButton? = null
@@ -80,7 +81,7 @@ class PlayerFragment : Fragment() {
         trackProgressBar!!.setDuration(playerState.track.duration)
         trackProgressBar!!.update(playerState.playbackPosition)
 
-        seekBar!!.isEnabled = true
+        seekBar!!.isEnabled = isOwner
     }
 
 
@@ -92,7 +93,7 @@ class PlayerFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-        val activity = activity as MainActivity
+        val activity = activity as JukeBoxActivity
 
         SpotifyAppRemote.setDebugMode(true)
 
@@ -121,9 +122,11 @@ class PlayerFragment : Fragment() {
         skipPreviousButton!!.setOnClickListener { onSkipPrevious() }
         trackProgressBar = TrackProgressBar(seekBar)
 
-        val addSongButton : Button = view.findViewById(R.id.addButton)
-        addSongButton.setOnClickListener {
-            play((view.findViewById(R.id.track_uri) as EditText).text.toString())
+        isOwner = (this.requireContext() as JukeBoxActivity).isOwner!!
+        if(!isOwner){
+            playPauseButton!!.visibility = View.INVISIBLE
+            skipNextButton!!.visibility = View.INVISIBLE
+            skipPreviousButton!!.visibility = View.INVISIBLE
         }
         return view
     }
@@ -150,7 +153,7 @@ class PlayerFragment : Fragment() {
     private fun connect(){
         SpotifyAppRemote.disconnect(spotifyAppRemote)
 
-        val activity = activity as MainActivity
+        val activity = activity as JukeBoxActivity
 
         val connectionParams = ConnectionParams.Builder(CLIENT_ID)
                 .setRedirectUri(REDIRECT_URL)

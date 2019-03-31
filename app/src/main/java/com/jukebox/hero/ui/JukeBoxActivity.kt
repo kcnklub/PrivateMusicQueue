@@ -1,42 +1,42 @@
 package com.jukebox.hero.ui
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.support.design.widget.BottomNavigationView
-import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.widget.Button
-import android.widget.ListView
-import android.widget.Toast
 import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
-import com.jukebox.hero.Models.PartyQueue
-import com.jukebox.hero.services.PmqPartyQueueService
-import com.jukebox.hero.ui.adapters.PartyQueueAdapter
-import com.jukebox.hero.util.SaveSharedPreference
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import com.jukebox.hero.R
 import com.jukebox.hero.ui.adapters.SimpleFragmentPagerAdapter
 import com.spotify.sdk.android.authentication.AuthenticationClient
 import com.spotify.sdk.android.authentication.AuthenticationRequest
 import com.spotify.sdk.android.authentication.AuthenticationResponse
-import kaaes.spotify.webapi.android.SpotifyApi
 
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(){
+class JukeBoxActivity : AppCompatActivity(){
+
+    lateinit var partyID : String
+    lateinit var ownerID : String
+    lateinit var currentUser : String
+    var isOwner : Boolean? = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+
+        partyID = intent.getStringExtra("partyQueueId")
+        ownerID = intent.getStringExtra("OwnerId")
+        currentUser = FirebaseAuth.getInstance().currentUser!!.uid
+
+        if(ownerID == currentUser){
+            isOwner = true
+        }
+        Log.d(TAG, "$currentUser is the owner $isOwner")
+        Log.d(TAG, "We are in party $partyID")
 
         // set up bottom took bar.
         viewpager.adapter = SimpleFragmentPagerAdapter(this, supportFragmentManager)

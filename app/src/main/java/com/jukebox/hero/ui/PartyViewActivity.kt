@@ -20,33 +20,33 @@ class PartyViewActivity : AppCompatActivity() {
     private val pmqSongService by lazy {
         PmqSongService.create()
     }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_party_view)
-        setSupportActionBar(toolbar)
-        val partyQueueId : Int? = this.intent.extras["partyQueueId"] as Int?
-        disposable = pmqSongService.getSongsForParty(partyQueueId!!)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        { result -> run{
-                            if(!result.isEmpty()){
-                                setUpListView(result)
-                            } else {
-                                throw Exception("Result is empty")
-                            }
-                        }},{ error -> run {
-                            Toast.makeText(this, error.message, Toast.LENGTH_LONG).show()
-                        }}
-                )
-
-    }
-
-    private fun setUpListView(list: List<Song.Song>){
-        val songs = findViewById<ListView>(R.id.song_list)
-        val songAdapter = SongsAdapter(this, R.layout.listview_song_item_row, list)
-        songs.adapter = songAdapter
-    }
+//
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        setContentView(R.layout.activity_party_view)
+//        setSupportActionBar(toolbar)
+//        val partyQueueId : Int? = this.intent.extras["partyQueueId"] as Int?
+//        disposable = pmqSongService.getSongsForParty(partyQueueId!!)
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(
+//                        { result -> run{
+//                            if(!result.isEmpty()){
+//                                setUpListView(result)
+//                            } else {
+//                                throw Exception("Result is empty")
+//                            }
+//                        }},{ error -> run {
+//                            Toast.makeText(this, error.message, Toast.LENGTH_LONG).show()
+//                        }}
+//                )
+//
+//    }
+//
+//    private fun setUpListView(list: List<Song.Song>){
+//        val songs = findViewById<ListView>(R.id.song_list)
+//        val songAdapter = SongsAdapter(this, R.layout.listview_song_item_row, list)
+//        songs.adapter = songAdapter
+//    }
 
 }

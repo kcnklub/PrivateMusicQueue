@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.jukebox.hero.ui.MainActivity">
+    tools:context="com.jukebox.hero.ui.JukeBoxActivity">
     <item
         android:id="@+id/party_manager"
         android:orderInCategory="10"

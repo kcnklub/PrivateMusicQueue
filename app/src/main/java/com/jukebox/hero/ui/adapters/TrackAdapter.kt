@@ -1,29 +1,21 @@
 package com.jukebox.hero.ui.adapters
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
-import android.graphics.drawable.Drawable
-import android.renderscript.ScriptGroup
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.LinearLayout
-import android.widget.TextView
 import android.widget.Toast
+import com.google.firebase.firestore.FirebaseFirestore
 import com.jukebox.hero.Models.Song
 import com.jukebox.hero.R
-import com.jukebox.hero.ui.SearchActivity
 import com.squareup.picasso.Picasso
 import kaaes.spotify.webapi.android.models.Track
 import kotlinx.android.synthetic.main.listview_song_item_row.view.*
-import java.io.InputStream
-import java.net.URL
 
-class TrackAdapter(private var data: List<Track>, val context: Context) : RecyclerView.Adapter<TrackAdapter.SongHolder>(){
+class TrackAdapter(private var data: List<Track>, val context: Context, private val partyQueueId: String) : RecyclerView.Adapter<TrackAdapter.SongHolder>(){
 
     override fun getItemCount(): Int {
         return data.size
@@ -42,31 +34,52 @@ class TrackAdapter(private var data: List<Track>, val context: Context) : Recycl
 
         //Toast.makeText(context, ""+data[position].uri, Toast.LENGTH_SHORT).show()
         holder.albumArt.setOnClickListener{
-            alertBox(holder.artistName.text.toString(), holder.songName.text.toString(), data[position].uri)
+            alertBox(holder.artistName.text.toString(),
+                    holder.songName.text.toString(),
+                    data[position].uri,
+                    data[position].album.images[0].url)
         }
         holder.artistName.setOnClickListener {
-            alertBox(holder.artistName.text.toString(), holder.songName.text.toString(), data[position].uri)
+            alertBox(holder.artistName.text.toString(),
+                    holder.songName.text.toString(),
+                    data[position].uri,
+                    data[position].album.images[0].url)
         }
         holder.songName.setOnClickListener {
-            alertBox(holder.artistName.text.toString(), holder.songName.text.toString(), data[position].uri)
+            alertBox(holder.artistName.text.toString(),
+                    holder.songName.text.toString(),
+                    data[position].uri,
+                    data[position].album.images[0].url)
         }
     }
 
-    fun alertBox(aName: String, sName: String, uuri:String) {
-        var builder: AlertDialog.Builder = AlertDialog.Builder(context)
+    fun alertBox(artistName: String, songName: String, songURI: String, albumArtURL: String ) {
+        val builder: AlertDialog.Builder = AlertDialog.Builder(context)
 
-        val aName = aName
-        val sName = sName
 
         builder.setCancelable(true)
         builder.setTitle("Add Song")
-        builder.setMessage("Add $sName by $aName to the queue?")
+        builder.setMessage("Add $songName by $artistName to the queue?")
 
         builder.setNegativeButton("No") { _, _->
             Toast.makeText(context, "Song not added to queue", Toast.LENGTH_SHORT).show()
         }
         builder.setPositiveButton("Yes") { _, _->
-            Toast.makeText(context, "Song added to queue", Toast.LENGTH_SHORT).show()
+            val db = FirebaseFirestore.getInstance()
+            val partyRef = db.collection("Parties").document(partyQueueId)
+            val songRef = partyRef.collection("Queue").document()
+            FirebaseFirestore.getInstance().runTransaction{ p1 ->
+                var count = 0
+                val song = Song(songName, artistName, albumArtURL, songURI, count + 1)
+                p1.set(songRef, song)
+                null
+            }.addOnSuccessListener {
+                Toast.makeText(context, "Song added to queue", Toast.LENGTH_SHORT).show()
+            }.addOnFailureListener {
+                Log.d(TAG, it.message)
+                it.printStackTrace()
+                Toast.makeText(context, "Song was not added to queue ${it.message}", Toast.LENGTH_LONG).show()
+            }
         }
         builder.show()
     }
@@ -75,5 +88,9 @@ class TrackAdapter(private var data: List<Track>, val context: Context) : Recycl
         val songName = view.song_name
         val albumArt = view.album_art
         val artistName = view.artist
+    }
+
+    companion object {
+        const val TAG = "TrackAdapter"
     }
 }
