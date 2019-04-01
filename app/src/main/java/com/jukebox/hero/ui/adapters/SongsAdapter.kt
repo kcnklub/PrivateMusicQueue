@@ -23,9 +23,9 @@ class SongsAdapter(query : Query) : FirestoreAdapter<SongsAdapter.SongHolder>(qu
     }
 
     class SongHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
-        val songName = itemView.song_name
-        val albumArt = itemView.album_art
-        val artistName = itemView.artist
+        private val songName = itemView.song_name
+        private val albumArt = itemView.album_art
+        private val artistName = itemView.artist
 
         fun bind(song: Song?){
             if(song == null){
