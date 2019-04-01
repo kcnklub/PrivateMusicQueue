@@ -32,7 +32,6 @@ class TrackAdapter(private var data: List<Track>, val context: Context, private 
         Picasso.get().load(albumArtUrl).resize(150, 150).into(holder.albumArt)
         holder.artistName.text = item.artists[0].name
 
-        //Toast.makeText(context, ""+data[position].uri, Toast.LENGTH_SHORT).show()
         holder.albumArt.setOnClickListener{
             alertBox(holder.artistName.text.toString(),
                     holder.songName.text.toString(),
@@ -53,7 +52,7 @@ class TrackAdapter(private var data: List<Track>, val context: Context, private 
         }
     }
 
-    fun alertBox(artistName: String, songName: String, songURI: String, albumArtURL: String ) {
+    private fun alertBox(artistName: String, songName: String, songURI: String, albumArtURL: String ) {
         val builder: AlertDialog.Builder = AlertDialog.Builder(context)
 
 
@@ -65,21 +64,32 @@ class TrackAdapter(private var data: List<Track>, val context: Context, private 
             Toast.makeText(context, "Song not added to queue", Toast.LENGTH_SHORT).show()
         }
         builder.setPositiveButton("Yes") { _, _->
+            var count = 0
             val db = FirebaseFirestore.getInstance()
             val partyRef = db.collection("Parties").document(partyQueueId)
             val songRef = partyRef.collection("Queue").document()
-            FirebaseFirestore.getInstance().runTransaction{ p1 ->
-                var count = 0
-                val song = Song(songName, artistName, albumArtURL, songURI, count + 1)
-                p1.set(songRef, song)
-                null
-            }.addOnSuccessListener {
-                Toast.makeText(context, "Song added to queue", Toast.LENGTH_SHORT).show()
-            }.addOnFailureListener {
-                Log.d(TAG, it.message)
-                it.printStackTrace()
-                Toast.makeText(context, "Song was not added to queue ${it.message}", Toast.LENGTH_LONG).show()
-            }
+            db.collection("Parties").document(partyQueueId)
+                    .collection("Queue")
+                    .get()
+                    .addOnSuccessListener { documents ->
+                        for (document in documents){
+                            count += 1
+                            Log.d(TAG, "${document.data}")
+                        }
+                        FirebaseFirestore.getInstance().runTransaction{ p1 ->
+                            Log.d(TAG, count.toString())
+                            val song = Song(songName, artistName, albumArtURL, songURI, count + 1)
+                            p1.set(songRef, song)
+                            null
+                        }.addOnSuccessListener {
+                            Toast.makeText(context, "Song added to queue", Toast.LENGTH_SHORT).show()
+                        }.addOnFailureListener {
+                            Log.d(TAG, it.message)
+                            it.printStackTrace()
+                            Toast.makeText(context, "Song was not added to queue ${it.message}", Toast.LENGTH_LONG).show()
+                        }
+                    }
+
         }
         builder.show()
     }

@@ -1,19 +1,14 @@
 package com.jukebox.hero.ui.adapters
 
-import android.app.Activity
-import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.TextView
 import com.google.firebase.firestore.Query
 import com.jukebox.hero.Models.Song
 import com.jukebox.hero.R
 import com.squareup.picasso.Picasso
-import kaaes.spotify.webapi.android.models.Track
 import kotlinx.android.synthetic.main.listview_song_item_row.view.*
 
 class SongsAdapter(query : Query) : FirestoreAdapter<SongsAdapter.SongHolder>(query){
@@ -40,6 +35,16 @@ class SongsAdapter(query : Query) : FirestoreAdapter<SongsAdapter.SongHolder>(qu
             Picasso.get().load(song.albumArt).resize(150, 150).into(albumArt)
             artistName.text = song.artist
             Log.d(TAG, song.name)
+
+            albumArt.setOnClickListener{
+                // do the onclick
+            }
+            artistName.setOnClickListener {
+                // do the onclick
+            }
+            songName.setOnClickListener {
+                // do the onclick
+            }
         }
     }
 

@@ -10,12 +10,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
 import android.widget.ImageView
 import android.widget.SeekBar
 import com.google.gson.GsonBuilder
-
 import com.jukebox.hero.R
 import com.jukebox.hero.ui.JukeBoxActivity
 import com.jukebox.hero.ui.JukeBoxActivity.Companion.CLIENT_ID
@@ -93,13 +90,13 @@ class PlayerFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-        val activity = activity as JukeBoxActivity
 
-        SpotifyAppRemote.setDebugMode(true)
-
-        disconnected()
-        connectAndAuthorize()
-
+        isOwner = (this.requireContext() as JukeBoxActivity).isOwner!!
+        if(isOwner){
+            SpotifyAppRemote.setDebugMode(true)
+            disconnected()
+            connectAndAuthorize()
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
