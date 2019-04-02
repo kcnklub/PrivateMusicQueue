@@ -1,35 +1,54 @@
 package com.jukebox.hero.ui.adapters
 
-import android.app.Activity
-import android.content.Context
+import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.TextView
+import com.google.firebase.firestore.Query
 import com.jukebox.hero.Models.Song
+import com.jukebox.hero.R
+import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.listview_song_item_row.view.*
 
-class SongsAdapter(context: Context,
-                   private var layoutResourceId: Int,
-                   private var data: List<Song.Song>) :
-        ArrayAdapter<Song.Song>(context, layoutResourceId, data) {
+class SongsAdapter(query : Query) : FirestoreAdapter<SongsAdapter.SongHolder>(query){
 
-    private var layoutInflater : LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View? {
-        var row : View? = convertView
-        val holder: SongHolder?
-        if(row == null){
-            val activity : Activity = context as Activity
-            val layoutInflater = activity.layoutInflater
-            row = layoutInflater.inflate(layoutResourceId, parent, false)
-        } else {
-            holder = row.tag as SongHolder
-        }
-
-        val song : Song.Song = data[position]
-        return row
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongsAdapter.SongHolder {
+        return SongsAdapter.SongHolder(LayoutInflater.from(parent.context)
+                .inflate(R.layout.listview_song_item_row, parent, false))
     }
 
-    class SongHolder (val textView: TextView)
+    override fun onBindViewHolder(holder: SongHolder, position: Int) {
+        holder.bind(getSnapshot(position).toObject(Song::class.java))
+    }
+
+    class SongHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
+        private val songName = itemView.song_name
+        private val albumArt = itemView.album_art
+        private val artistName = itemView.artist
+
+        fun bind(song: Song?){
+            if(song == null){
+                return
+            }
+            songName?.text = song.name
+            Picasso.get().load(song.albumArt).resize(150, 150).into(albumArt)
+            artistName.text = song.artist
+            Log.d(TAG, song.name)
+
+            albumArt.setOnClickListener{
+                // do the onclick
+            }
+            artistName.setOnClickListener {
+                // do the onclick
+            }
+            songName.setOnClickListener {
+                // do the onclick
+            }
+        }
+    }
+
+    companion object {
+        const val TAG = "SongAdapter"
+    }
 }

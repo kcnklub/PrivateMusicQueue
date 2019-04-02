@@ -112,7 +112,7 @@ class RegisterActivity : AppCompatActivity() {
 
     private fun registerComplete(userId : Int){
         SaveSharedPreference.setLoggedIn(applicationContext, true, userId)
-        val intent = Intent(this, MainActivity::class.java)
+        val intent = Intent(this, JukeBoxActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         startActivity(intent)
     }

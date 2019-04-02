@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.View
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
-import com.google.firebase.firestore.FirebaseFirestore
 import com.jukebox.hero.R
 import kotlinx.android.synthetic.main.activity_display_name.*
 
@@ -32,7 +31,7 @@ class DisplayNameActivity : AppCompatActivity() {
                                     .build()
         auth.currentUser!!.updateProfile(changeRequest)
 
-        val intent = Intent(this, MainActivity::class.java)
+        val intent = Intent(this, JukeBoxActivity::class.java)
         startActivity(intent)
     }
 }

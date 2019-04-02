@@ -7,13 +7,14 @@ import android.support.v4.app.FragmentPagerAdapter
 import com.jukebox.hero.ui.fragments.PlayerFragment
 import com.jukebox.hero.ui.fragments.SearchFragment
 import com.jukebox.hero.ui.PartyViewActivity
+import com.jukebox.hero.ui.fragments.JukeboxHomeFragment
 
 class SimpleFragmentPagerAdapter(val context: Context,
                                  fm : FragmentManager) : FragmentPagerAdapter(fm) {
 
     override fun getItem(p0: Int): Fragment {
         return when(p0){
-            0 -> PlayerFragment.newInstance("test", "test")
+            0 -> JukeboxHomeFragment.newInstance("test", "test")
             1 -> PlayerFragment.newInstance("test2", "test2")
             else -> SearchFragment.newInstance()
         }

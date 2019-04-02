@@ -11,7 +11,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 
 import com.jukebox.hero.R
-import com.jukebox.hero.ui.MainActivity
+import com.jukebox.hero.ui.JukeBoxActivity
 import com.jukebox.hero.ui.adapters.TrackAdapter
 import kaaes.spotify.webapi.android.SpotifyApi
 import kaaes.spotify.webapi.android.SpotifyCallback
@@ -24,6 +24,14 @@ class SearchFragment : Fragment() {
     val api = SpotifyApi()
     var songArrayList: ArrayList<Track> = ArrayList()
     private lateinit var linearLayoutManager: LinearLayoutManager
+    lateinit var partyId : String
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val activity = activity as JukeBoxActivity
+        partyId = activity.partyID
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -31,7 +39,7 @@ class SearchFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_search, container, false)
         linearLayoutManager = LinearLayoutManager(requireContext())
         val searchResultsList: RecyclerView = view.findViewById(R.id.search_list)
-        api.setAccessToken(MainActivity.spotifyAuthToken)
+        api.setAccessToken(JukeBoxActivity.spotifyAuthToken)
         view.searchButton.setOnClickListener {
 
             val searchText: EditText = view.findViewById(R.id.searchText)
@@ -50,7 +58,7 @@ class SearchFragment : Fragment() {
                                 songArrayList.add(i)
                             }
                             searchResultsList.layoutManager = linearLayoutManager
-                            searchResultsList.adapter = TrackAdapter(songArrayList, requireContext())
+                            searchResultsList.adapter = TrackAdapter(songArrayList, requireContext(), partyId)
                         }
                     }
                 }

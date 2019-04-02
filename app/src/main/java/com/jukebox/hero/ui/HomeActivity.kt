@@ -9,7 +9,6 @@ import android.view.*
 import android.widget.*
 import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 
 import com.jukebox.hero.R
@@ -109,19 +108,19 @@ class HomeActivity : AppCompatActivity() {
                 .addOnSuccessListener { result ->
                     if (!result.isEmpty) {
                         val data = result.documents.first().data!!
-                        val hostid = data["HostId"].toString()
+                        val hostId = data["HostId"].toString()
                         val name = data["PartyName"].toString()
-                        val partyid = hostid + name.replace(" ", "")
+                        val partyId = hostId + name.replace(" ", "")
 
-                        addUserToParty(partyid, uid)
+                        addUserToParty(partyId, uid)
 
-                        setCurrentParty(uid, partyid)
+                        setCurrentParty(uid, partyId)
 
-                        addPartyToHistory(uid, partyid)
+                        addPartyToHistory(uid, partyId)
 
                         getUsersCurrentParty(uid)
 
-                        finishCreation(partyid)
+                        finishCreation(partyId, hostId)
 
                     } else {
                         Toast.makeText(this, "No parties with that information.", Toast.LENGTH_SHORT).show()
@@ -297,7 +296,7 @@ class HomeActivity : AppCompatActivity() {
                                                     .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
                                                     .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
 
-                                            finishCreation(uid + partyid)
+                                            finishCreation(uid + partyid, uid)
                                         } else {
                                             Toast.makeText(this, "You already have an active party with that name.", Toast.LENGTH_LONG).show()
                                         }
@@ -321,9 +320,10 @@ class HomeActivity : AppCompatActivity() {
         return codeArray.joinToString("")
     }
 
-    private fun finishCreation(partyQueueId : String){
-        val intent = Intent(this, MainActivity::class.java)
+    private fun finishCreation(partyQueueId : String, ownerId : String){
+        val intent = Intent(this, JukeBoxActivity::class.java)
         intent.putExtra("partyQueueId", partyQueueId)
+        intent.putExtra("OwnerId", ownerId)
         startActivity(intent)
     }
 
@@ -449,7 +449,7 @@ class HomeActivity : AppCompatActivity() {
                 true
             }
             R.id.main_activity -> {
-                val intent = Intent(this, MainActivity::class.java)
+                val intent = Intent(this, JukeBoxActivity::class.java)
                 startActivity(intent)
                 true
             }
