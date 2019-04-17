@@ -5,29 +5,20 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
 import android.util.Log
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
 import android.widget.*
 import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-
 import com.jukebox.hero.R
 import java.util.*
 import kotlin.random.Random
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
 /**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [testOne.OnFragmentInteractionListener] interface
- * to handle interaction events.
- * Use the [testOne.newInstance] factory method to
- * create an instance of this fragment.
- *
+ * Home activity where users will be when not in a party
+ * They will be able to join a party from here and host a party.
  */
 class HomeActivity : AppCompatActivity() {
 
@@ -56,12 +47,6 @@ class HomeActivity : AppCompatActivity() {
         setContentView(R.layout.activity_home)
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
-
-        // Inflate the layout for this fragment
-//        Log.d(TAG, "onCreateView")
-//        val view = inflater.inflate(R.layout.activity_home, container, false)
-        //val test : TextView = view!!.findViewById(R.id.test)
-        //test.text = param1
 
         tvParty = findViewById(R.id.tvParty)
 

@@ -12,7 +12,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.SeekBar
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.gson.GsonBuilder
+import com.jukebox.hero.Models.Song
 import com.jukebox.hero.R
 import com.jukebox.hero.ui.JukeBoxActivity
 import com.jukebox.hero.ui.JukeBoxActivity.Companion.CLIENT_ID
@@ -40,7 +43,6 @@ class PlayerFragment : Fragment() {
 
     var isOwner : Boolean = false
 
-
     var playPauseButton : AppCompatImageButton? = null
     var skipPreviousButton : AppCompatImageButton? = null
     var skipNextButton : AppCompatImageButton? = null
@@ -53,8 +55,8 @@ class PlayerFragment : Fragment() {
     var playerContextSubscription : Subscription<PlayerContext>? = null
     var capabilitiesSubscription : Subscription<Capabilities>? = null
 
-    val playerContextEventCallBack = Subscription.EventCallback<PlayerContext> {
-
+    var playerContextEventCallBack = Subscription.EventCallback<PlayerContext> {
+        Log.d(TAG, "idk something is happening here. ")
     }
 
     private val playerStateEventCallBack = Subscription.EventCallback<PlayerState> { playerState ->
@@ -79,6 +81,13 @@ class PlayerFragment : Fragment() {
         trackProgressBar!!.update(playerState.playbackPosition)
 
         seekBar!!.isEnabled = isOwner
+        if(playerState.playbackPosition == playerState.track.duration){
+            (requireActivity() as JukeBoxActivity).updateQueue()
+            playNextSong()
+            lastSongPos = playerState.track.duration / 2
+        } else {
+            lastSongPos = playerState.playbackPosition
+        }
     }
 
 
@@ -187,6 +196,12 @@ class PlayerFragment : Fragment() {
             playerStateSubscription = null
         }
 
+        playerContextSubscription = spotifyAppRemote!!.playerApi.subscribeToPlayerContext()
+                .setEventCallback(playerContextEventCallBack)
+                .setErrorCallback {
+                    Log.d(TAG, "something went wrong.")
+                } as Subscription<PlayerContext>
+
         playerStateSubscription = spotifyAppRemote!!.playerApi
                 .subscribeToPlayerState()
                 .setEventCallback(playerStateEventCallBack)
@@ -204,11 +219,25 @@ class PlayerFragment : Fragment() {
                 } as Subscription<PlayerState>?
     }
 
-    fun play(trackURI: String){
+    fun play(trackURI: String?){
         spotifyAppRemote!!.playerApi
                 .play(trackURI)
                 .setResultCallback { Log.d(TAG, "Play successful") }
                 .setErrorCallback { Log.d(TAG, "something went wrong.") }
+    }
+
+    fun playNextSong(){
+        val db = FirebaseFirestore.getInstance()
+        val partyId = (requireActivity() as JukeBoxActivity).partyID
+        db.collection("Parties").document(partyId)
+                .collection("Queue")
+                .orderBy(Song.FIELD_PLACE_IN_QUEUE, Query.Direction.ASCENDING)
+                .limit(1)
+                .get()
+                .addOnSuccessListener { document ->
+                    val nextSong = document.first().toObject(Song::class.java)
+                    play(nextSong.songURI)
+                }
     }
 
     // player controls
@@ -220,9 +249,9 @@ class PlayerFragment : Fragment() {
     }
 
     fun onSkipNext(){
-        spotifyAppRemote!!.playerApi.skipNext()
-                .setResultCallback { Log.d(TAG, "skip back") }
-                .setErrorCallback { Log.d(TAG, "Error") }
+        (requireActivity() as JukeBoxActivity).updateQueue()
+        playNextSong()
+        lastSongPos = 10000
     }
 
     fun onPlayPauseClicked(){
@@ -281,6 +310,7 @@ class PlayerFragment : Fragment() {
 
         fun update(progress : Long){
             seekBar!!.progress = progress.toInt()
+            PlayerFragment.lastSongPos = 10000
         }
 
         fun pause(){
@@ -309,5 +339,8 @@ class PlayerFragment : Fragment() {
         var spotifyAppRemote : SpotifyAppRemote? = null
 
         var gson = GsonBuilder().setPrettyPrinting().create()
+
+        @JvmStatic
+        var lastSongPos : Long = 10000
     }
 }
