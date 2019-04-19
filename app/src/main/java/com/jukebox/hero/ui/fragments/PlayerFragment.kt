@@ -64,13 +64,6 @@ class PlayerFragment : Fragment() {
     }
 
     private val playerStateEventCallBack = Subscription.EventCallback<PlayerState> { playerState ->
-//        val timeRemaining = playerState.track.duration - playerState.playbackPosition
-
-
-
-//        Log.d(TAG, "!!!! State changed: Time until track change: " + (timeRemaining) + " Song Duration: " + playerState.track.duration + " Playback Position: " + playerState.playbackPosition + " !!!!")
-//        trackCountdown!!.removeCallbacksAndMessages(null)
-
 
         if(playerState.playbackSpeed > 0){
             trackProgressBar!!.unpause()
@@ -81,10 +74,8 @@ class PlayerFragment : Fragment() {
         if(playerState.isPaused){
             playPauseButton!!.setImageResource(R.drawable.btn_play)
             Log.d(TAG, "!!!! track is paused, we need to not change song !!!!")
-//            trackCountdown!!.removeCallbacksAndMessages(null)
         } else {
             playPauseButton!!.setImageResource(R.drawable.btn_pause)
-//            trackCountdown!!.postDelayed(changeSongRunnable, timeRemaining - 500)
         }
 
         spotifyAppRemote!!.imagesApi.getImage(playerState.track.imageUri, Image.Dimension.LARGE)
@@ -203,8 +194,6 @@ class PlayerFragment : Fragment() {
             }
         }
 
-        //if(spotifyAppRemote == null)
-        //    SpotifyAppRemote.disconnect(spotifyAppRemote)
         SpotifyAppRemote.setDebugMode(true)
         SpotifyAppRemote.connect(context, connectionParams, connectionListener)
     }
@@ -238,22 +227,28 @@ class PlayerFragment : Fragment() {
                     Log.d(TAG, "Error")
                 } as Subscription<PlayerState>?
 
+        /* create a runnable we can pass to remainingTimeService that checks remaining time
+        *  until it under 1333ms and then plays the next song. The runnable waits 1000ms after
+        *  playing a new song before restarting the probes so it doesn't skip songs.
+         */
         val runnable = Runnable {
             var playedNewSong = false
-            while (!playedNewSong) {
+            while (true) {
+                // if we haven't played the next song yet, pull the current state
                 val state = spotifyAppRemote!!.playerApi.playerState.await().data
                 val remaining = state.track.duration - state.playbackPosition
+
                 Log.d(TAG, "!!!! Remaining: " + remaining + " !!!!")
+
+                // if the remaining time is under 1333ms, play the next song
                 if (remaining < 1333) {
                     Log.d(TAG, "!!!! Playing new song !!!!")
-                    playedNewSong = true
                     (requireActivity() as JukeBoxActivity).updateQueue()
                     playNextSong()
-                    Thread.sleep(1000)
-                    playedNewSong = false
+                    Thread.sleep(1000) // sleep the thread for a moment so we don't skip songs
                 }
 
-                Thread.sleep(25)
+                Thread.sleep(25) // interval between state probes
             }
         }
         remainingTimeService = Thread(runnable)
