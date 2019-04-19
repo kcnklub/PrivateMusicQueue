@@ -30,6 +30,8 @@ import com.spotify.protocol.types.Capabilities
 import com.spotify.protocol.types.Image
 import com.spotify.protocol.types.PlayerContext
 import com.spotify.protocol.types.PlayerState
+import java.util.*
+import kotlin.concurrent.schedule
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -40,6 +42,8 @@ private const val ARG_PARAM2 = "param2"
 class PlayerFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
+
+    var remainingTimeService : Thread? = null
 
     var isOwner : Boolean = false
 
@@ -60,6 +64,14 @@ class PlayerFragment : Fragment() {
     }
 
     private val playerStateEventCallBack = Subscription.EventCallback<PlayerState> { playerState ->
+//        val timeRemaining = playerState.track.duration - playerState.playbackPosition
+
+
+
+//        Log.d(TAG, "!!!! State changed: Time until track change: " + (timeRemaining) + " Song Duration: " + playerState.track.duration + " Playback Position: " + playerState.playbackPosition + " !!!!")
+//        trackCountdown!!.removeCallbacksAndMessages(null)
+
+
         if(playerState.playbackSpeed > 0){
             trackProgressBar!!.unpause()
         } else {
@@ -68,8 +80,11 @@ class PlayerFragment : Fragment() {
 
         if(playerState.isPaused){
             playPauseButton!!.setImageResource(R.drawable.btn_play)
+            Log.d(TAG, "!!!! track is paused, we need to not change song !!!!")
+//            trackCountdown!!.removeCallbacksAndMessages(null)
         } else {
             playPauseButton!!.setImageResource(R.drawable.btn_pause)
+//            trackCountdown!!.postDelayed(changeSongRunnable, timeRemaining - 500)
         }
 
         spotifyAppRemote!!.imagesApi.getImage(playerState.track.imageUri, Image.Dimension.LARGE)
@@ -81,18 +96,21 @@ class PlayerFragment : Fragment() {
         trackProgressBar!!.update(playerState.playbackPosition)
 
         seekBar!!.isEnabled = isOwner
-        if(playerState.playbackPosition == playerState.track.duration){
-            (requireActivity() as JukeBoxActivity).updateQueue()
-            playNextSong()
-            lastSongPos = playerState.track.duration / 2
-        } else {
-            lastSongPos = playerState.playbackPosition
-        }
+//        val percentCompletion = playerState.playbackPosition.toFloat()/playerState.track.duration.toFloat()
+//        if(percentCompletion >= 0.998){
+//            (requireActivity() as JukeBoxActivity).updateQueue()
+//            playNextSong()
+//            lastSongPos = playerState.track.duration / 2
+//        } else {
+//            lastSongPos = playerState.playbackPosition
+//        }
     }
 
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+
 
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -106,6 +124,8 @@ class PlayerFragment : Fragment() {
             disconnected()
             connectAndAuthorize()
         }
+
+
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -217,13 +237,41 @@ class PlayerFragment : Fragment() {
                 .setErrorCallback{
                     Log.d(TAG, "Error")
                 } as Subscription<PlayerState>?
+
+        val runnable = Runnable {
+            var playedNewSong = false
+            while (!playedNewSong) {
+                val state = spotifyAppRemote!!.playerApi.playerState.await().data
+                val remaining = state.track.duration - state.playbackPosition
+                Log.d(TAG, "!!!! Remaining: " + remaining + " !!!!")
+                if (remaining < 1333) {
+                    Log.d(TAG, "!!!! Playing new song !!!!")
+                    playedNewSong = true
+                    (requireActivity() as JukeBoxActivity).updateQueue()
+                    playNextSong()
+                    Thread.sleep(1000)
+                    playedNewSong = false
+                }
+
+                Thread.sleep(25)
+            }
+        }
+        remainingTimeService = Thread(runnable)
+        remainingTimeService!!.start()
     }
 
     fun play(trackURI: String?){
         spotifyAppRemote!!.playerApi
                 .play(trackURI)
-                .setResultCallback { Log.d(TAG, "Play successful") }
+                .setResultCallback {
+                    Log.d(TAG, "Play successful")
+
+
+
+                }
                 .setErrorCallback { Log.d(TAG, "something went wrong.") }
+
+
     }
 
     fun playNextSong(){
@@ -238,6 +286,7 @@ class PlayerFragment : Fragment() {
                     val nextSong = document.first().toObject(Song::class.java)
                     play(nextSong.songURI)
                 }
+
     }
 
     // player controls
