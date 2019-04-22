@@ -30,8 +30,6 @@ import com.spotify.protocol.types.Capabilities
 import com.spotify.protocol.types.Image
 import com.spotify.protocol.types.PlayerContext
 import com.spotify.protocol.types.PlayerState
-import java.util.*
-import kotlin.concurrent.schedule
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -87,22 +85,11 @@ class PlayerFragment : Fragment() {
         trackProgressBar!!.update(playerState.playbackPosition)
 
         seekBar!!.isEnabled = isOwner
-//        val percentCompletion = playerState.playbackPosition.toFloat()/playerState.track.duration.toFloat()
-//        if(percentCompletion >= 0.998){
-//            (requireActivity() as JukeBoxActivity).updateQueue()
-//            playNextSong()
-//            lastSongPos = playerState.track.duration / 2
-//        } else {
-//            lastSongPos = playerState.playbackPosition
-//        }
     }
 
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
-
-
         super.onCreate(savedInstanceState)
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
@@ -115,15 +102,11 @@ class PlayerFragment : Fragment() {
             disconnected()
             connectAndAuthorize()
         }
-
-
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-
         // Inflate the layout for this fragment
-
         val view  = inflater.inflate(R.layout.fragment_player, container, false)
         seekBar = view.findViewById(R.id.seek_to)
         seekBar!!.isEnabled = false
@@ -260,13 +243,8 @@ class PlayerFragment : Fragment() {
                 .play(trackURI)
                 .setResultCallback {
                     Log.d(TAG, "Play successful")
-
-
-
                 }
                 .setErrorCallback { Log.d(TAG, "something went wrong.") }
-
-
     }
 
     fun playNextSong(){
@@ -281,7 +259,6 @@ class PlayerFragment : Fragment() {
                     val nextSong = document.first().toObject(Song::class.java)
                     play(nextSong.songURI)
                 }
-
     }
 
     // player controls
