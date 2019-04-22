@@ -8,6 +8,10 @@ import android.view.Menu
 import android.view.MenuItem
 import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.WriteBatch
+import com.jukebox.hero.Models.Song
 import com.jukebox.hero.R
 import com.jukebox.hero.ui.adapters.SimpleFragmentPagerAdapter
 import com.spotify.sdk.android.authentication.AuthenticationClient
@@ -22,6 +26,8 @@ class JukeBoxActivity : AppCompatActivity(){
     lateinit var ownerID : String
     lateinit var currentUser : String
     var isOwner : Boolean? = false
+
+    lateinit var db : FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -103,7 +109,28 @@ class JukeBoxActivity : AppCompatActivity(){
         }
     }
 
+    fun updateQueue(){
+        db = FirebaseFirestore.getInstance()
+        val query = db.collection("Parties")
+                .document(partyID).collection("Queue")
+                .orderBy(Song.FIELD_PLACE_IN_QUEUE, Query.Direction.ASCENDING)
 
+        query.get().addOnSuccessListener {documents ->
+            val batch : WriteBatch = db.batch()
+            for(document in documents){
+                val docRef = db.collection("Parties").document(partyID).collection("Queue").document(document.id)
+                val songInQueue = document.toObject(Song::class.java)
+                if(songInQueue.placeInQueue == 1){
+                    batch.delete(docRef)
+                } else {
+                    batch.update(docRef, Song.FIELD_PLACE_IN_QUEUE, songInQueue.placeInQueue!!.minus(1))
+                }
+            }
+            batch.commit().addOnCompleteListener{
+                Log.d(TAG, "we made it.")
+            }
+        }
+    }
 
     companion object {
         const val TAG = "Main Activity"

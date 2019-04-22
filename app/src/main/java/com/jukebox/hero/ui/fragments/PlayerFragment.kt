@@ -12,7 +12,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.SeekBar
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.gson.GsonBuilder
+import com.jukebox.hero.Models.Song
 import com.jukebox.hero.R
 import com.jukebox.hero.ui.JukeBoxActivity
 import com.jukebox.hero.ui.JukeBoxActivity.Companion.CLIENT_ID
@@ -38,8 +41,9 @@ class PlayerFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
-    var isOwner : Boolean = false
+    var remainingTimeService : Thread? = null
 
+    var isOwner : Boolean = false
 
     var playPauseButton : AppCompatImageButton? = null
     var skipPreviousButton : AppCompatImageButton? = null
@@ -53,11 +57,12 @@ class PlayerFragment : Fragment() {
     var playerContextSubscription : Subscription<PlayerContext>? = null
     var capabilitiesSubscription : Subscription<Capabilities>? = null
 
-    val playerContextEventCallBack = Subscription.EventCallback<PlayerContext> {
-
+    var playerContextEventCallBack = Subscription.EventCallback<PlayerContext> {
+        Log.d(TAG, "idk something is happening here. ")
     }
 
     private val playerStateEventCallBack = Subscription.EventCallback<PlayerState> { playerState ->
+
         if(playerState.playbackSpeed > 0){
             trackProgressBar!!.unpause()
         } else {
@@ -66,6 +71,7 @@ class PlayerFragment : Fragment() {
 
         if(playerState.isPaused){
             playPauseButton!!.setImageResource(R.drawable.btn_play)
+            Log.d(TAG, "!!!! track is paused, we need to not change song !!!!")
         } else {
             playPauseButton!!.setImageResource(R.drawable.btn_pause)
         }
@@ -84,7 +90,6 @@ class PlayerFragment : Fragment() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
@@ -101,9 +106,7 @@ class PlayerFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-
         // Inflate the layout for this fragment
-
         val view  = inflater.inflate(R.layout.fragment_player, container, false)
         seekBar = view.findViewById(R.id.seek_to)
         seekBar!!.isEnabled = false
@@ -174,8 +177,6 @@ class PlayerFragment : Fragment() {
             }
         }
 
-        //if(spotifyAppRemote == null)
-        //    SpotifyAppRemote.disconnect(spotifyAppRemote)
         SpotifyAppRemote.setDebugMode(true)
         SpotifyAppRemote.connect(context, connectionParams, connectionListener)
     }
@@ -186,6 +187,12 @@ class PlayerFragment : Fragment() {
             playerStateSubscription!!.cancel()
             playerStateSubscription = null
         }
+
+        playerContextSubscription = spotifyAppRemote!!.playerApi.subscribeToPlayerContext()
+                .setEventCallback(playerContextEventCallBack)
+                .setErrorCallback {
+                    Log.d(TAG, "something went wrong.")
+                } as Subscription<PlayerContext>
 
         playerStateSubscription = spotifyAppRemote!!.playerApi
                 .subscribeToPlayerState()
@@ -202,13 +209,56 @@ class PlayerFragment : Fragment() {
                 .setErrorCallback{
                     Log.d(TAG, "Error")
                 } as Subscription<PlayerState>?
+
+        /* create a runnable we can pass to remainingTimeService that checks remaining time
+        *  until it under 1333ms and then plays the next song. The runnable waits 1000ms after
+        *  playing a new song before restarting the probes so it doesn't skip songs.
+         */
+        val runnable = Runnable {
+            var playedNewSong = false
+            while (true) {
+                // if we haven't played the next song yet, pull the current state
+                val state = spotifyAppRemote!!.playerApi.playerState.await().data
+                val remaining = state.track.duration - state.playbackPosition
+
+                Log.d(TAG, "!!!! Remaining: " + remaining + " !!!!")
+
+                // if the remaining time is under 1333ms, play the next song
+                if (remaining < 1333) {
+                    Log.d(TAG, "!!!! Playing new song !!!!")
+                    (requireActivity() as JukeBoxActivity).updateQueue()
+                    playNextSong()
+                    Thread.sleep(1000) // sleep the thread for a moment so we don't skip songs
+                }
+
+                Thread.sleep(25) // interval between state probes
+            }
+        }
+        remainingTimeService = Thread(runnable)
+        remainingTimeService!!.start()
     }
 
-    fun play(trackURI: String){
+    fun play(trackURI: String?){
         spotifyAppRemote!!.playerApi
                 .play(trackURI)
-                .setResultCallback { Log.d(TAG, "Play successful") }
+                .setResultCallback {
+                    Log.d(TAG, "Play successful")
+                }
                 .setErrorCallback { Log.d(TAG, "something went wrong.") }
+    }
+
+    fun playNextSong(){
+        val db = FirebaseFirestore.getInstance()
+        val partyId = (requireActivity() as JukeBoxActivity).partyID
+        db.collection("Parties").document(partyId)
+                .collection("Queue")
+                .orderBy(Song.FIELD_PLACE_IN_QUEUE, Query.Direction.ASCENDING)
+                .limit(1)
+                .get()
+                .addOnSuccessListener { document ->
+                    val nextSong = document.first().toObject(Song::class.java)
+                    play(nextSong.songURI)
+                }
     }
 
     // player controls
@@ -220,9 +270,9 @@ class PlayerFragment : Fragment() {
     }
 
     fun onSkipNext(){
-        spotifyAppRemote!!.playerApi.skipNext()
-                .setResultCallback { Log.d(TAG, "skip back") }
-                .setErrorCallback { Log.d(TAG, "Error") }
+        (requireActivity() as JukeBoxActivity).updateQueue()
+        playNextSong()
+        lastSongPos = 10000
     }
 
     fun onPlayPauseClicked(){
@@ -281,6 +331,7 @@ class PlayerFragment : Fragment() {
 
         fun update(progress : Long){
             seekBar!!.progress = progress.toInt()
+            PlayerFragment.lastSongPos = 10000
         }
 
         fun pause(){
@@ -309,5 +360,8 @@ class PlayerFragment : Fragment() {
         var spotifyAppRemote : SpotifyAppRemote? = null
 
         var gson = GsonBuilder().setPrettyPrinting().create()
+
+        @JvmStatic
+        var lastSongPos : Long = 10000
     }
 }

@@ -11,11 +11,9 @@ import android.view.ViewGroup
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.jukebox.hero.Models.Song
-
 import com.jukebox.hero.R
 import com.jukebox.hero.ui.JukeBoxActivity
 import com.jukebox.hero.ui.adapters.SongsAdapter
-import com.jukebox.hero.ui.adapters.TrackAdapter
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -52,7 +50,7 @@ class JukeboxHomeFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_jukebox_home, container, false)
         linearLayoutManager = LinearLayoutManager(requireContext())
         val searchResultsList: RecyclerView = view.findViewById(R.id.queue_list)
-        val query = firestore.collection("Parties")
+        query = firestore.collection("Parties")
                 .document(partyId).collection("Queue")
                 .orderBy(Song.FIELD_PLACE_IN_QUEUE, Query.Direction.ASCENDING)
 

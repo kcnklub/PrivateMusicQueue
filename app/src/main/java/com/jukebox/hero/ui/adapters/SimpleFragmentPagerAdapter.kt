@@ -4,10 +4,9 @@ import android.content.Context
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
+import com.jukebox.hero.ui.fragments.JukeboxHomeFragment
 import com.jukebox.hero.ui.fragments.PlayerFragment
 import com.jukebox.hero.ui.fragments.SearchFragment
-import com.jukebox.hero.ui.PartyViewActivity
-import com.jukebox.hero.ui.fragments.JukeboxHomeFragment
 
 class SimpleFragmentPagerAdapter(val context: Context,
                                  fm : FragmentManager) : FragmentPagerAdapter(fm) {
