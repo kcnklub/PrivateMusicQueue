@@ -30,8 +30,10 @@ class SongsAdapter(val query : Query, private val listener : OnSongChangeListene
     override fun onDataChanged() {
         super.onDataChanged()
         query.get().addOnSuccessListener {
-            val newSong = it.documents.first().toObject(Song::class.java)
-            listener.onChange(newSong)
+            if(!(it.documents.isEmpty())) {
+                val newSong = it.documents.first().toObject(Song::class.java)
+                listener.onChange(newSong)
+            }
         }
     }
 

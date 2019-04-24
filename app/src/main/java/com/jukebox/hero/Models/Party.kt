@@ -1,9 +1,9 @@
 package com.jukebox.hero.Models
 
 data class Party (
-        var hostId: String? = null,
+        var HostId: String? = null,
         var RoomCode: String? = null,
-        var partyName: String? = null
+        var PartyName: String? = null
 ){
     companion object {
         const val FIELD_NAME = "PartyName"
