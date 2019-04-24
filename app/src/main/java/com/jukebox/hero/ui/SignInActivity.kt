@@ -22,7 +22,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.Query.Direction
 import com.jukebox.hero.R
 import kotlinx.android.synthetic.main.activity_sign_in.*
@@ -150,7 +149,7 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener{
                             firestore.collection("Users").orderBy("UserCode", Direction.DESCENDING).limit(1)
                                     .get()
                                     .addOnSuccessListener { querySnapshot ->
-                                        // get a new unique usercode
+                                        // get a new unique userCode
                                         var userCode = if (querySnapshot != null) {
                                             querySnapshot.documents.first().data!!["UserCode"].toString()
                                         } else {
@@ -172,7 +171,9 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener{
                                                     startActivity(intent)
                                                     Log.d(TAG, "New user created on sign in")
                                                 }
-                                                .addOnFailureListener { Log.e(TAG, "Error creating user document on sign in", it) }
+                                                .addOnFailureListener { error ->
+                                                    Log.e(TAG, "Error creating user document on sign in", error)
+                                                }
                                     }
 
 

@@ -14,6 +14,8 @@ import com.google.firebase.firestore.WriteBatch
 import com.jukebox.hero.Models.Song
 import com.jukebox.hero.R
 import com.jukebox.hero.ui.adapters.SimpleFragmentPagerAdapter
+import com.jukebox.hero.ui.fragments.JukeboxHomeFragment
+import com.jukebox.hero.ui.fragments.PlayerFragment
 import com.spotify.sdk.android.authentication.AuthenticationClient
 import com.spotify.sdk.android.authentication.AuthenticationRequest
 import com.spotify.sdk.android.authentication.AuthenticationResponse
@@ -23,11 +25,14 @@ import kotlinx.android.synthetic.main.activity_main.*
 class JukeBoxActivity : AppCompatActivity(){
 
     lateinit var partyID : String
-    lateinit var ownerID : String
-    lateinit var currentUser : String
+    private lateinit var ownerID : String
+    private lateinit var currentUser : String
     var isOwner : Boolean? = false
 
-    lateinit var db : FirebaseFirestore
+    private lateinit var db : FirebaseFirestore
+
+    lateinit var playerFragment: PlayerFragment
+    lateinit var jukeboxHomeFragment : JukeboxHomeFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +61,9 @@ class JukeBoxActivity : AppCompatActivity(){
 
         navigation.getTabAt(2)?.setIcon(R.drawable.ic_search_white_24dp)
         navigation.getTabAt(2)?.text = ""
+
+        jukeboxHomeFragment = (viewpager.adapter as SimpleFragmentPagerAdapter).getItem(0) as JukeboxHomeFragment
+        playerFragment = (viewpager.adapter as SimpleFragmentPagerAdapter).getItem(1) as PlayerFragment
 
         // spotify shit
         val builder = AuthenticationRequest.Builder(CLIENT_ID,

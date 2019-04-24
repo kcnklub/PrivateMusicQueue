@@ -14,22 +14,22 @@ import android.widget.ImageView
 import android.widget.SeekBar
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.google.gson.GsonBuilder
 import com.jukebox.hero.Models.Song
 import com.jukebox.hero.R
 import com.jukebox.hero.ui.JukeBoxActivity
 import com.jukebox.hero.ui.JukeBoxActivity.Companion.CLIENT_ID
 import com.jukebox.hero.ui.JukeBoxActivity.Companion.REDIRECT_URL
+import com.jukebox.hero.ui.adapters.SongsAdapter
 import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector
 import com.spotify.android.appremote.api.SpotifyAppRemote
 import com.spotify.android.appremote.api.error.CouldNotFindSpotifyApp
 import com.spotify.android.appremote.api.error.NotLoggedInException
 import com.spotify.protocol.client.Subscription
-import com.spotify.protocol.types.Capabilities
 import com.spotify.protocol.types.Image
 import com.spotify.protocol.types.PlayerContext
 import com.spotify.protocol.types.PlayerState
+import com.squareup.picasso.Picasso
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -37,34 +37,33 @@ private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
 
-class PlayerFragment : Fragment() {
+class PlayerFragment : Fragment(), SongsAdapter.OnSongChangeListener  {
     private var param1: String? = null
     private var param2: String? = null
 
-    var remainingTimeService : Thread? = null
+    private var remainingTimeService : Thread? = null
 
-    var isOwner : Boolean = false
+    private var isOwner : Boolean = false
 
-    var playPauseButton : AppCompatImageButton? = null
-    var skipPreviousButton : AppCompatImageButton? = null
-    var skipNextButton : AppCompatImageButton? = null
-    var coverArtImageView : ImageView? = null
+    private var playPauseButton : AppCompatImageButton? = null
+    private var skipPreviousButton : AppCompatImageButton? = null
+    private var skipNextButton : AppCompatImageButton? = null
+    private var coverArtImageView : ImageView? = null
 
-    var seekBar : SeekBar? = null
-    var trackProgressBar : TrackProgressBar? = null
+    private var seekBar : SeekBar? = null
+    private var trackProgressBar : TrackProgressBar? = null
 
-    var playerStateSubscription : Subscription<PlayerState>? = null
-    var playerContextSubscription : Subscription<PlayerContext>? = null
-    var capabilitiesSubscription : Subscription<Capabilities>? = null
+    private var playerStateSubscription : Subscription<PlayerState>? = null
+    private var playerContextSubscription : Subscription<PlayerContext>? = null
 
-    var playerContextEventCallBack = Subscription.EventCallback<PlayerContext> {
+    private var playerContextEventCallBack = Subscription.EventCallback<PlayerContext> {
         Log.d(TAG, "idk something is happening here. ")
     }
 
     private val playerStateEventCallBack = Subscription.EventCallback<PlayerState> { playerState ->
 
         if(playerState.playbackSpeed > 0){
-            trackProgressBar!!.unpause()
+            trackProgressBar!!.unPause()
         } else {
             trackProgressBar!!.pause()
         }
@@ -97,6 +96,7 @@ class PlayerFragment : Fragment() {
         }
 
         isOwner = (this.requireContext() as JukeBoxActivity).isOwner!!
+        (this.requireActivity() as JukeBoxActivity).playerFragment = this
         if(isOwner){
             SpotifyAppRemote.setDebugMode(true)
             disconnected()
@@ -127,6 +127,7 @@ class PlayerFragment : Fragment() {
             playPauseButton!!.visibility = View.INVISIBLE
             skipNextButton!!.visibility = View.INVISIBLE
             skipPreviousButton!!.visibility = View.INVISIBLE
+            seekBar!!.visibility = View.INVISIBLE
         }
         return view
     }
@@ -215,7 +216,6 @@ class PlayerFragment : Fragment() {
         *  playing a new song before restarting the probes so it doesn't skip songs.
          */
         val runnable = Runnable {
-            var playedNewSong = false
             while (true) {
                 // if we haven't played the next song yet, pull the current state
                 val state = spotifyAppRemote!!.playerApi.playerState.await().data
@@ -263,19 +263,19 @@ class PlayerFragment : Fragment() {
 
     // player controls
 
-    fun onSkipPrevious(){
+    private fun onSkipPrevious(){
         spotifyAppRemote!!.playerApi.skipPrevious()
                 .setResultCallback { Log.d(TAG, "skip back") }
                 .setErrorCallback { Log.d(TAG, "Error") }
     }
 
-    fun onSkipNext(){
+    private fun onSkipNext(){
         (requireActivity() as JukeBoxActivity).updateQueue()
         playNextSong()
         lastSongPos = 10000
     }
 
-    fun onPlayPauseClicked(){
+    private fun onPlayPauseClicked(){
         spotifyAppRemote!!.playerApi.playerState.setResultCallback { playerState ->
             if(playerState.isPaused){
                 spotifyAppRemote!!.playerApi
@@ -288,6 +288,12 @@ class PlayerFragment : Fragment() {
                         .setResultCallback { Log.d(TAG, "paused") }
                         .setErrorCallback { Log.d(TAG, "Error") }
             }
+        }
+    }
+
+    override fun onChange(song: Song?) {
+        if(!this.isOwner && song != null){
+            Picasso.get().load(song.albumArt).into(coverArtImageView)
         }
     }
 
@@ -308,7 +314,7 @@ class PlayerFragment : Fragment() {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 spotifyAppRemote!!.playerApi.seekTo(seekBar!!.progress.toLong())
                         .setErrorCallback{
-                            Log.d(TAG, "Errrrrrrooooooorrrrrrr")
+                            Log.d(TAG, "Something is Wrong")
                         }
             }
         }
@@ -338,7 +344,7 @@ class PlayerFragment : Fragment() {
             handler.removeCallbacks(seekRunnable)
         }
 
-        fun unpause(){
+        fun unPause(){
             handler.removeCallbacks(seekRunnable)
             handler.postDelayed(seekRunnable, LOOP_DURATION)
         }
@@ -358,8 +364,6 @@ class PlayerFragment : Fragment() {
 
         @JvmStatic
         var spotifyAppRemote : SpotifyAppRemote? = null
-
-        var gson = GsonBuilder().setPrettyPrinting().create()
 
         @JvmStatic
         var lastSongPos : Long = 10000

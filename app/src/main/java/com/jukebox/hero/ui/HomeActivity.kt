@@ -12,6 +12,7 @@ import android.widget.*
 import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.jukebox.hero.Models.Party
 import com.jukebox.hero.R
 import java.util.*
 import kotlin.random.Random
@@ -114,7 +115,7 @@ class HomeActivity : AppCompatActivity() {
                 }
     }
 
-    fun addPartyToHistory(uid: String, partyid: String) {
+    private fun addPartyToHistory(uid: String, partyId: String) {
         val userDoc = firestore.collection("Users").document(uid)
         userDoc.get()
                 .addOnSuccessListener { doc ->
@@ -123,16 +124,16 @@ class HomeActivity : AppCompatActivity() {
                         if (data.containsKey("History")) {
                             val history = data["History"] as MutableList<Any>
 
-                            history.add(0, partyid)
+                            history.add(0, partyId)
                             for (i in 1..history.size-1) {
-                                if (history[i].toString() == partyid) {
+                                if (history[i].toString() == partyId) {
                                     history.removeAt(i)
                                     break
                                 }
                             }
                             data["History"] = history
                         } else {
-                            val history = mutableListOf(partyid)
+                            val history = mutableListOf(partyId)
                             data["History"] = history
                         }
 
@@ -141,7 +142,7 @@ class HomeActivity : AppCompatActivity() {
                 }
     }
 
-    fun updateUserData(uid: String, data: Map<String, Any>) {
+    private fun updateUserData(uid: String, data: Map<String, Any>) {
         val userDoc = firestore.collection("Users").document(uid)
         userDoc.update(data)
                 .addOnSuccessListener {
@@ -152,7 +153,7 @@ class HomeActivity : AppCompatActivity() {
                 }
     }
 
-    fun addUserToParty(party: String, uid: String) {
+    private fun addUserToParty(party: String, uid: String) {
         val partyDoc = firestore.collection("Parties").document(party)
         partyDoc.get()
             .addOnSuccessListener { doc ->
@@ -176,7 +177,7 @@ class HomeActivity : AppCompatActivity() {
 
     }
 
-    fun setCurrentParty(uid: String, party: String) {
+    private fun setCurrentParty(uid: String, party: String) {
         firestore.collection("Users").document(uid)
                 .update(hashMapOf("CurrentParty" to party as Any))
                 .addOnSuccessListener { userDoc ->
@@ -189,8 +190,8 @@ class HomeActivity : AppCompatActivity() {
                 }
     }
 
-    fun getUsersCurrentParty(uid : String): HashMap<String, Any>? {
-        var party : HashMap<String, Any>? = null
+    private fun getUsersCurrentParty(uid : String): Party? {
+        var party : Party? = null
         val userDoc = firestore.collection("Users").document(uid)
 
         userDoc.get()
@@ -209,8 +210,12 @@ class HomeActivity : AppCompatActivity() {
                                     .addOnSuccessListener { doc2 ->
                                         if (doc2.exists()) {
                                             Log.d(TAG, "Successfully pulled party with id " + currentParty.toString())
-                                            party = doc2.data!! as HashMap<String, Any>
-                                            swapToPartyingElements(party!!)
+                                            party = doc2.toObject(Party::class.java)
+//                                            swapToPartyingElements(party!!)
+                                            val intent = Intent(this, JukeBoxActivity::class.java)
+                                            intent.putExtra("partyQueueId", doc2.id)
+                                            intent.putExtra("OwnerId", party!!.hostId as String)
+                                            startActivity(intent)
                                         }
                                     }
                         } else {
@@ -233,9 +238,6 @@ class HomeActivity : AppCompatActivity() {
 
         val partyName = etPartyName.text
 
-        var cancel = false
-        var focusView: View = etPartyName
-
         if (TextUtils.isEmpty(partyName)) {
             Toast.makeText(this, "Party name cannot be empty", Toast.LENGTH_SHORT).show()
         } else {
@@ -255,7 +257,6 @@ class HomeActivity : AppCompatActivity() {
                         for (doc in query.documents) {
                             roomCodes.add(doc.data!!["RoomCode"].toString())
                         }
-
                         do {
                             party["RoomCode"] = createRoomCode()
                         } while (roomCodes.contains(party["RoomCode"].toString()))
@@ -299,7 +300,7 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
-    fun createRoomCode():String {
+    private fun createRoomCode():String {
         val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
         val codeArray = List(5) {chars[Random.nextInt(0, chars.length)]}
         return codeArray.joinToString("")
@@ -312,39 +313,12 @@ class HomeActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    fun onLeavePartyClicked() {
+    private fun onLeavePartyClicked() {
         leaveParty()
         swapToNotPartyingElements()
     }
 
-
-
-    fun swapToPartyingElements(party: HashMap<String, Any>) {
-        tvParty.visibility = View.VISIBLE
-        btnHostButton.visibility = View.GONE
-        tvParty.text = getText(R.string.home_partying)
-
-        etPartyName.visibility = View.GONE
-
-        tvPartyName.visibility = View.VISIBLE
-        tvPartyName.text = getString(R.string.party_name_display, party["PartyName"].toString())
-
-        tvRoomCode.visibility = View.VISIBLE
-        tvRoomCode.text = getString(R.string.party_room_code_display, party["RoomCode"].toString())
-
-        btnLeaveButton.visibility = View.VISIBLE
-
-        tvJoinParty.visibility = View.GONE
-        etRoomCode.visibility = View.GONE
-        btnJoinParty.visibility = View.GONE
-        tvNearbyParties.visibility = View.GONE
-        svParties.visibility = View.GONE
-
-        divider1.visibility = View.GONE
-        divider2.visibility = View.GONE
-    }
-
-    fun leaveParty() {
+    private fun leaveParty() {
         val uid = auth.currentUser!!.uid
         val userDoc = firestore.collection("Users").document(uid)
         userDoc.get()
@@ -388,7 +362,7 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
-    fun swapToNotPartyingElements() {
+    private fun swapToNotPartyingElements() {
         tvParty.visibility = View.VISIBLE
         tvParty.text = getText(R.string.home_not_partying)
 

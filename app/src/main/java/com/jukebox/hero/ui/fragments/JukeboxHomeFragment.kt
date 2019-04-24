@@ -19,13 +19,13 @@ private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
 class JukeboxHomeFragment : Fragment() {
-    // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
     private lateinit var linearLayoutManager: LinearLayoutManager
 
     lateinit var query: Query
     lateinit var adapter : SongsAdapter
+    private lateinit var searchResultsList : RecyclerView
 
     private lateinit var firestore : FirebaseFirestore
     private lateinit var partyId : String
@@ -49,22 +49,20 @@ class JukeboxHomeFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_jukebox_home, container, false)
         linearLayoutManager = LinearLayoutManager(requireContext())
-        val searchResultsList: RecyclerView = view.findViewById(R.id.queue_list)
+        searchResultsList= view!!.findViewById(R.id.queue_list)
         query = firestore.collection("Parties")
                 .document(partyId).collection("Queue")
                 .orderBy(Song.FIELD_PLACE_IN_QUEUE, Query.Direction.ASCENDING)
-
-        adapter = SongsAdapter(query)
-
-        searchResultsList.layoutManager = linearLayoutManager
-        searchResultsList.adapter = adapter
-
+        (this.requireActivity() as JukeBoxActivity).jukeboxHomeFragment = this
 
         return view
     }
 
     override fun onStart() {
         super.onStart()
+        adapter = SongsAdapter(query, (activity as JukeBoxActivity).playerFragment)
+        searchResultsList.layoutManager = linearLayoutManager
+        searchResultsList.adapter = adapter
         adapter.startListening()
     }
 
