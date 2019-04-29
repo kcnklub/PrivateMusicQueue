@@ -214,7 +214,7 @@ class HomeActivity : AppCompatActivity() {
 //                                            swapToPartyingElements(party!!)
                                             val intent = Intent(this, JukeBoxActivity::class.java)
                                             intent.putExtra("partyQueueId", doc2.id)
-                                            intent.putExtra("OwnerId", party!!.hostId as String)
+                                            intent.putExtra("OwnerId", party!!.HostId as String)
                                             startActivity(intent)
                                         }
                                     }
