@@ -216,6 +216,7 @@ class PlayerFragment : Fragment(), SongsAdapter.OnSongChangeListener  {
         *  until it under 1333ms and then plays the next song. The runnable waits 1000ms after
         *  playing a new song before restarting the probes so it doesn't skip songs.
          */
+        /*
         val runnable = Runnable {
             while (true) {
                 // if we haven't played the next song yet, pull the current state
@@ -236,6 +237,7 @@ class PlayerFragment : Fragment(), SongsAdapter.OnSongChangeListener  {
         }
         remainingTimeService = Thread(runnable)
         remainingTimeService!!.start()
+        */
     }
 
     fun play(trackURI: String?){
