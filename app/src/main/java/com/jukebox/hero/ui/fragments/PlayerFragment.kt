@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.SeekBar
+import android.widget.Toast
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.jukebox.hero.Models.Song
@@ -220,19 +221,18 @@ class PlayerFragment : Fragment(), SongsAdapter.OnSongChangeListener  {
             while (true) {
                 // if we haven't played the next song yet, pull the current state
                 val state = spotifyAppRemote!!.playerApi.playerState.await().data
-                val remaining = state.track.duration - state.playbackPosition
+                if(state != null) {
+                    val remaining = state.track.duration - state.playbackPosition
 
-                Log.d(TAG, "!!!! Remaining: " + remaining + " !!!!")
+                    // if the remaining time is under 1333ms, play the next song
+                    if (remaining < 1333) {
+                        (requireActivity() as JukeBoxActivity).updateQueue()
+                        playNextSong()
+                        Thread.sleep(1000) // sleep the thread for a moment so we don't skip songs
+                    }
 
-                // if the remaining time is under 1333ms, play the next song
-                if (remaining < 1333) {
-                    Log.d(TAG, "!!!! Playing new song !!!!")
-                    (requireActivity() as JukeBoxActivity).updateQueue()
-                    playNextSong()
-                    Thread.sleep(1000) // sleep the thread for a moment so we don't skip songs
+                    Thread.sleep(25) // interval between state probes
                 }
-
-                Thread.sleep(25) // interval between state probes
             }
         }
         remainingTimeService = Thread(runnable)
@@ -258,8 +258,12 @@ class PlayerFragment : Fragment(), SongsAdapter.OnSongChangeListener  {
                 .limit(1)
                 .get()
                 .addOnSuccessListener { document ->
-                    val nextSong = document.first().toObject(Song::class.java)
-                    play(nextSong.songURI)
+                    if(!document.isEmpty) {
+                        val nextSong = document.first().toObject(Song::class.java)
+                        play(nextSong.songURI)
+                    } else {
+                        Toast.makeText(requireContext(), "There is no song in queue!", Toast.LENGTH_SHORT).show()
+                    }
                 }
     }
 
