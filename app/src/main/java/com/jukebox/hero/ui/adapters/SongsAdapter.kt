@@ -6,6 +6,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import com.google.firebase.firestore.Query
 import com.jukebox.hero.Models.Song
 import com.jukebox.hero.R
@@ -41,16 +43,27 @@ class SongsAdapter(val query : Query, private val listener : OnSongChangeListene
         private val songName = itemView.song_name
         private val albumArt = itemView.album_art
         private val artistName = itemView.artist
+        private val score = itemView.score
+        private val upvote = itemView.upvote
+        private val downvote = itemView.downvote
+        private var state = 0
 
         fun bind(song: Song?, position: Int){
+            upvote.visibility = View.VISIBLE
+            downvote.visibility = View.VISIBLE
+            score.visibility = View.VISIBLE
             if(position == 0){
                 itemView.setBackgroundColor(Color.parseColor("#66FFF9"))
                 songName.setTextColor(Color.BLACK)
                 artistName.setTextColor(Color.BLACK)
+                itemView.upvote.visibility = View.GONE
+                itemView.downvote.visibility = View.GONE
+                itemView.score.visibility = View.GONE
             }
-            if(song == null){
+            if(song == null) {
                 return
             }
+
             songName?.text = song.name
             Picasso.get().load(song.albumArt).resize(150, 150).into(albumArt)
             artistName.text = song.artist
@@ -64,6 +77,36 @@ class SongsAdapter(val query : Query, private val listener : OnSongChangeListene
             }
             songName.setOnClickListener {
                 // do the onclick
+            }
+            upvote.setOnClickListener {
+                if(state == 0) {
+                    state++
+                    score.text = (score.text.toString().toInt()+1).toString()
+                }
+                else if(state == 1) {
+                    state--
+                    score.text = (score.text.toString().toInt()-1).toString()
+                }
+                else {
+                    state+=2
+                    score.text = (score.text.toString().toInt()+2).toString()
+                }
+
+            }
+            downvote.setOnClickListener {
+                if(state == 0) {
+                    state--
+                    score.text = (score.text.toString().toInt()-1).toString()
+                }
+                else if(state == -1) {
+                    state++
+                    score.text = (score.text.toString().toInt()+1).toString()
+                }
+                else {
+                    state-=2
+                    score.text = (score.text.toString().toInt()-2).toString()
+                }
+
             }
         }
     }
