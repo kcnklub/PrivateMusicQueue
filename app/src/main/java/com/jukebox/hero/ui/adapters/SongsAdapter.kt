@@ -1,6 +1,7 @@
 package com.jukebox.hero.ui.adapters
 
 import android.graphics.Color
+import android.os.Bundle
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,9 +9,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.RadioGroup
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.jukebox.hero.Models.Song
 import com.jukebox.hero.R
+import com.jukebox.hero.ui.JukeBoxActivity
+import com.jukebox.hero.ui.fragments.SearchFragment
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.listview_song_item_row.view.*
 
@@ -63,7 +67,7 @@ class SongsAdapter(val query : Query, private val listener : OnSongChangeListene
             if(song == null) {
                 return
             }
-
+            score.text = song.score.toString()
             songName?.text = song.name
             Picasso.get().load(song.albumArt).resize(150, 150).into(albumArt)
             artistName.text = song.artist
@@ -111,7 +115,14 @@ class SongsAdapter(val query : Query, private val listener : OnSongChangeListene
         }
     }
 
+    private fun updateScore(add : Int) {
+        val db = FirebaseFirestore.getInstance()
+        val partyRef = db.collection("Parties").document("")
+        val songRef = partyRef.collection("Queue")
+    }
+
     companion object {
+        fun create(): SearchFragment = SearchFragment()
         const val TAG = "SongAdapter"
     }
 }

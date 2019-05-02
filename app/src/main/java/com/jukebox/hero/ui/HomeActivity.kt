@@ -397,11 +397,6 @@ class HomeActivity : AppCompatActivity() {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.leave_party -> run {
-                val intent = Intent(this, HomeActivity::class.java)
-                startActivity(intent)
-                true
-            }
             R.id.action_settings -> {
                 val intent = Intent(this, SettingsActivity::class.java)
                 startActivity(intent)

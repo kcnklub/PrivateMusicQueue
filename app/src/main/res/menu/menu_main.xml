@@ -3,11 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.jukebox.hero.ui.JukeBoxActivity">
     <item
-        android:id="@+id/leave_party"
-        android:orderInCategory="10"
-        android:title="@string/leave_party"
-        app:showAsAction="never" />
-    <item
         android:id="@+id/party_manager"
         android:orderInCategory="10"
         android:title="@string/party_manager"
