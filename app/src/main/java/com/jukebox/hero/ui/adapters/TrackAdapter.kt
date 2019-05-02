@@ -78,7 +78,7 @@ class TrackAdapter(private var data: List<Track>, val context: Context, private 
                         }
                         FirebaseFirestore.getInstance().runTransaction{ p1 ->
                             Log.d(TAG, count.toString())
-                            val song = Song(songName, artistName, albumArtURL, songURI, count + 1)
+                            val song = Song(songName, artistName, albumArtURL, songURI, count + 1, 0)
                             p1.set(songRef, song)
                             null
                         }.addOnSuccessListener {
