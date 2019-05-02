@@ -67,6 +67,10 @@ class SearchFragment : Fragment() {
         return view
     }
 
+    fun getTheId():String {
+        return partyId
+    }
+
     companion object {
         @JvmStatic
         fun newInstance() =
