@@ -33,19 +33,7 @@ class TrackAdapter(private var data: List<Track>, val context: Context, private 
         Picasso.get().load(albumArtUrl).resize(150, 150).into(holder.albumArt)
         holder.artistName.text = item.artists[0].name
 
-        holder.albumArt.setOnClickListener{
-            alertBox(holder.artistName.text.toString(),
-                    holder.songName.text.toString(),
-                    data[position].uri,
-                    data[position].album.images[0].url)
-        }
-        holder.artistName.setOnClickListener {
-            alertBox(holder.artistName.text.toString(),
-                    holder.songName.text.toString(),
-                    data[position].uri,
-                    data[position].album.images[0].url)
-        }
-        holder.songName.setOnClickListener {
+        holder.songEntry.setOnClickListener {
             alertBox(holder.artistName.text.toString(),
                     holder.songName.text.toString(),
                     data[position].uri,
@@ -55,12 +43,9 @@ class TrackAdapter(private var data: List<Track>, val context: Context, private 
 
     private fun alertBox(artistName: String, songName: String, songURI: String, albumArtURL: String ) {
         val builder: AlertDialog.Builder = AlertDialog.Builder(context)
-
-
         builder.setCancelable(true)
         builder.setTitle("Add Song")
         builder.setMessage("Add $songName by $artistName to the queue?")
-
         builder.setNegativeButton("No") { _, _->
             Toast.makeText(context, "Song not added to queue", Toast.LENGTH_SHORT).show()
         }
@@ -98,6 +83,7 @@ class TrackAdapter(private var data: List<Track>, val context: Context, private 
         val songName = view.song_name
         val albumArt = view.album_art
         val artistName = view.artist
+        val songEntry = view.song_entry
     }
 
     companion object {

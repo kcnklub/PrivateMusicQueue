@@ -1,14 +1,19 @@
 package com.jukebox.hero.ui.adapters
 
 import android.content.Context
+import android.content.Intent
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.jukebox.hero.Models.Party
 import com.jukebox.hero.R
+import com.jukebox.hero.ui.HomeActivity
+import com.jukebox.hero.ui.JukeBoxActivity
 import kotlinx.android.synthetic.main.listview_jukebox_row.view.*
 
 class JukeboxAdapter(query : Query, val context: Context) : FirestoreAdapter<JukeboxAdapter.JukeboxHolder>(query) {
@@ -33,7 +38,25 @@ class JukeboxAdapter(query : Query, val context: Context) : FirestoreAdapter<Juk
             jukeboxCode.text = "Room Code : " + party.roomCode
 
             jukebox.setOnClickListener {
-                Toast.makeText(context, "this is going to take you to the party now?", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "this is going to take you do the party now?", Toast.LENGTH_LONG).show()
+                FirebaseFirestore.getInstance().collection("Parties")
+                        .whereEqualTo(Party.FIELD_ROOM_CODE, party.roomCode).get()
+                        .addOnSuccessListener {
+                            if(!it.isEmpty){
+                                val party = it.documents.first().toObject(Party::class.java)
+
+                                HomeActivity.addUserToParty(it.documents.first().id)
+                                HomeActivity.setCurrentParty(FirebaseAuth.getInstance().currentUser!!.uid, it.documents.first().id)
+                                if(FirebaseAuth.getInstance().currentUser!!.uid != party!!.hostId){
+                                    HomeActivity.addPartyToHistory(FirebaseAuth.getInstance().currentUser!!.uid, it.documents.first().id)
+                                }
+
+                                val intent = Intent(context, JukeBoxActivity::class.java)
+                                intent.putExtra("partyQueueId", it.documents.first().id)
+                                intent.putExtra("OwnerId", party.hostId)
+                                context.startActivity(intent)
+                            }
+                        }
             }
         }
     }
