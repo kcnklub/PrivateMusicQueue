@@ -1,16 +1,15 @@
-package com.jukebox.hero.ui
+package com.jukebox.hero.ui.fragments
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import android.widget.*
 import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
@@ -18,24 +17,31 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.jukebox.hero.Models.Party
 import com.jukebox.hero.Models.User
+
 import com.jukebox.hero.R
-import com.jukebox.hero.ui.adapters.HomeFragmentAdapter
+import com.jukebox.hero.ui.HomeActivity
+import com.jukebox.hero.ui.JukeBoxActivity
+import com.jukebox.hero.ui.SettingsActivity
+import com.jukebox.hero.ui.SignInActivity
 import com.jukebox.hero.ui.adapters.JukeboxAdapter
-import com.jukebox.hero.ui.adapters.SimpleFragmentPagerAdapter
-import com.jukebox.hero.ui.fragments.HomeLocalPartiesFragment
-import com.jukebox.hero.ui.fragments.HomePersonalPartiesFragment
-import com.jukebox.hero.ui.fragments.JukeboxHomeFragment
-import com.jukebox.hero.ui.fragments.PlayerFragment
-import kotlinx.android.synthetic.main.activity_main.*
-import java.util.*
+import java.util.HashMap
 import kotlin.random.Random
 
-/**
- * Home activity where users will be when not in a party
- * They will be able to join a party from here and host a party.
- */
-class HomeActivity : AppCompatActivity() {
+// TODO: Rename parameter arguments, choose names that match
+// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+private const val ARG_PARAM1 = "param1"
+private const val ARG_PARAM2 = "param2"
 
+/**
+ * A simple [Fragment] subclass.
+ * Activities that contain this fragment must implement the
+ * [HomePersonalPartiesFragment.OnFragmentInteractionListener] interface
+ * to handle interaction events.
+ * Use the [HomePersonalPartiesFragment.newInstance] factory method to
+ * create an instance of this fragment.
+ *
+ */
+class HomePersonalPartiesFragment : Fragment() {
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
 
@@ -44,7 +50,7 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var btnHostButton : Button
     private lateinit var btnLeaveButton : Button
 
-//    private lateinit var tvPartyName: TextView
+    //    private lateinit var tvPartyName: TextView
     private lateinit var tvRoomCode: TextView
 
     private lateinit var tvJoinParty: TextView
@@ -60,68 +66,58 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var userJukeboxQuery : Query
     private lateinit var jukeboxAdapter: JukeboxAdapter
 
-    private lateinit var personalPartiesFragment: HomePersonalPartiesFragment
-    private lateinit var localPartiesFragment: HomeLocalPartiesFragment
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_home)
 
 
-        // set up bottom took bar.
-        viewpager.adapter = HomeFragmentAdapter(this, supportFragmentManager)
-        navigation.setupWithViewPager(viewpager)
-
-        navigation.getTabAt(0)?.setIcon(R.drawable.ic_view_agenda_white_24dp)
-        navigation.getTabAt(0)?.text = ""
-
-        navigation.getTabAt(1)?.setIcon(R.drawable.ic_play_arrow_white_24dp)
-        navigation.getTabAt(1)?.text = ""
-
-
-        personalPartiesFragment = (viewpager.adapter as HomeFragmentAdapter).getItem(0) as HomePersonalPartiesFragment
-        localPartiesFragment = (viewpager.adapter as HomeFragmentAdapter).getItem(1) as HomeLocalPartiesFragment
-
-//        auth = FirebaseAuth.getInstance()
-//        firestore = FirebaseFirestore.getInstance()
-//
-//        etPartyName = findViewById(R.id.etPartyName)
-//
-//        btnHostButton = findViewById(R.id.btnCreateParty)
-//        btnHostButton.setOnClickListener(View.OnClickListener {
-//            attemptCreateParty()
-//        })
-//
-//        btnLeaveButton = findViewById(R.id.btnLeaveParty)
-//        btnLeaveButton.setOnClickListener(View.OnClickListener {
-//            onLeavePartyClicked()
-//        })
-//
-//        tvJoinParty = findViewById(R.id.tvJoinParty)
-//        etRoomCode = findViewById(R.id.etRoomCode)
-//
-//        btnJoinParty = findViewById(R.id.btnJoinByRoomCode)
-//        btnJoinParty.setOnClickListener(View.OnClickListener {
-//            onJoinPartyClicked()
-//        })
-//
-//        tvNearbyParties = findViewById(R.id.tvHistory)
-//
-//        divider1 = findViewById(R.id.divider)
-//        divider2 = findViewById(R.id.divider2)
-//
-//        getUsersCurrentParty(auth.currentUser!!.uid)
-//
-//        jukeboxListView = findViewById(R.id.user_jukeboxes)
-//        userJukeboxQuery = firestore.collection("Users").document(auth.currentUser!!.uid)
-//                .collection("userParties")
-//        jukeboxAdapter = JukeboxAdapter(userJukeboxQuery, this)
-//        jukeboxListView.layoutManager = LinearLayoutManager(this)
-//        jukeboxListView.adapter = jukeboxAdapter
-//        jukeboxAdapter.startListening()
     }
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        // Inflate the layout for this fragment
+        val view = inflater.inflate(R.layout.fragment_home_personal_parties, container, false)
 
+
+        auth = FirebaseAuth.getInstance()
+        firestore = FirebaseFirestore.getInstance()
+
+        etPartyName = view.findViewById(R.id.etPartyName)
+
+        btnHostButton = view.findViewById(R.id.btnCreateParty)
+        btnHostButton.setOnClickListener(View.OnClickListener {
+            attemptCreateParty()
+        })
+
+        btnLeaveButton = view.findViewById(R.id.btnLeaveParty)
+        btnLeaveButton.setOnClickListener(View.OnClickListener {
+            onLeavePartyClicked()
+        })
+
+        tvJoinParty = view.findViewById(R.id.tvJoinParty)
+        etRoomCode = view.findViewById(R.id.etRoomCode)
+
+        btnJoinParty = view.findViewById(R.id.btnJoinByRoomCode)
+        btnJoinParty.setOnClickListener(View.OnClickListener {
+            onJoinPartyClicked()
+        })
+
+        tvNearbyParties = view.findViewById(R.id.tvHistory)
+
+        divider1 = view.findViewById(R.id.divider)
+        divider2 = view.findViewById(R.id.divider2)
+
+        getUsersCurrentParty(auth.currentUser!!.uid)
+
+        jukeboxListView = view.findViewById(R.id.user_jukeboxes)
+        userJukeboxQuery = firestore.collection("Users").document(auth.currentUser!!.uid)
+                .collection("userParties")
+        jukeboxAdapter = JukeboxAdapter(userJukeboxQuery, requireContext())
+        jukeboxListView.layoutManager = LinearLayoutManager(requireContext())
+        jukeboxListView.adapter = jukeboxAdapter
+        jukeboxAdapter.startListening()
+
+        return view
+    }
 
     fun onJoinPartyClicked() {
         val roomCode: String = etRoomCode.text.toString()
@@ -149,7 +145,7 @@ class HomeActivity : AppCompatActivity() {
                         finishCreation(partyId, hostId)
 
                     } else {
-                        Toast.makeText(this, "No parties with that information.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "No parties with that information.", Toast.LENGTH_SHORT).show()
                     }
 
                 }
@@ -165,7 +161,7 @@ class HomeActivity : AppCompatActivity() {
                             val history = data["History"] as MutableList<Any>
 
                             history.add(0, partyId)
-                            for (i in 1..history.size-1) {
+                            for (i in 1 until history.size) {
                                 if (history[i].toString() == partyId) {
                                     history.removeAt(i)
                                     break
@@ -186,10 +182,10 @@ class HomeActivity : AppCompatActivity() {
         val userDoc = firestore.collection("Users").document(uid)
         userDoc.update(data)
                 .addOnSuccessListener {
-                    Log.d(TAG, "User object successfully updated.")
+                    Log.d(HomePersonalPartiesFragment.TAG, "User object successfully updated.")
                 }
                 .addOnFailureListener { exception ->
-                    Log.e(TAG, "Error updating user object.", exception)
+                    Log.e(HomePersonalPartiesFragment.TAG, "Error updating user object.", exception)
                 }
     }
 
@@ -207,11 +203,11 @@ class HomeActivity : AppCompatActivity() {
                 .update(hashMapOf("currentParty" to party as Any))
                 .addOnSuccessListener { userDoc ->
                     if (userDoc != null) {
-                        Log.d(TAG, "Updated current party to " + party + " for user " + uid)
+                        Log.d(HomePersonalPartiesFragment.TAG, "Updated current party to " + party + " for user " + uid)
                     }
                 }
                 .addOnFailureListener { exception ->
-                    Log.e(TAG, "Error updating current party for user", exception)
+                    Log.e(HomePersonalPartiesFragment.TAG, "Error updating current party for user", exception)
                 }
     }
 
@@ -222,7 +218,7 @@ class HomeActivity : AppCompatActivity() {
         userDoc.get()
                 .addOnSuccessListener { document ->
                     if (document.exists()) {
-                        Log.d(TAG, "Successfully pulled user with id " + uid)
+                        Log.d(HomePersonalPartiesFragment.TAG, "Successfully pulled user with id " + uid)
                         val currentParty = if (document.data!!.keys.contains("currentParty")) {
                             document.data!!["currentParty"] as String?
                         } else {
@@ -234,23 +230,23 @@ class HomeActivity : AppCompatActivity() {
                             partyDoc.get()
                                     .addOnSuccessListener { doc2 ->
                                         if (doc2.exists()) {
-                                            Log.d(TAG, "Successfully pulled party with id " + currentParty.toString())
+                                            Log.d(HomePersonalPartiesFragment.TAG, "Successfully pulled party with id " + currentParty.toString())
                                             party = doc2.toObject(Party::class.java)
 //                                            swapToPartyingElements(party!!)
-                                            val intent = Intent(this, JukeBoxActivity::class.java)
+                                            val intent = Intent(requireContext(), JukeBoxActivity::class.java)
                                             intent.putExtra("partyQueueId", doc2.id)
                                             intent.putExtra("OwnerId", party!!.hostId as String)
                                             startActivity(intent)
                                         }
                                     }
                         } else {
-                            Log.d(TAG, "currentParty was null")
+                            Log.d(HomePersonalPartiesFragment.TAG, "currentParty was null")
                             swapToNotPartyingElements()
                         }
                     }
                 }
                 .addOnFailureListener { exception ->
-                    Log.d(TAG, "Error checking if user has a party: ", exception)
+                    Log.d(HomePersonalPartiesFragment.TAG, "Error checking if user has a party: ", exception)
                 }
 
 
@@ -264,7 +260,7 @@ class HomeActivity : AppCompatActivity() {
         val partyName = etPartyName.text
 
         if (TextUtils.isEmpty(partyName)) {
-            Toast.makeText(this, "Party name cannot be empty", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Party name cannot be empty", Toast.LENGTH_SHORT).show()
         } else {
             //create party.
             val uid = auth.currentUser!!.uid
@@ -300,31 +296,31 @@ class HomeActivity : AppCompatActivity() {
 
                                     if(!nameUsed){
                                         // this is a new name for a party so lets get this bread and make it.
-                                        FirebaseFirestore.getInstance().runTransaction{transaction ->
+                                        FirebaseFirestore.getInstance().runTransaction{ transaction ->
                                             transaction.set(FirebaseFirestore.getInstance()
                                                     .collection("Users").document(uid)
                                                     .collection("userParties").document(),
                                                     newParty)
                                             null
                                         }.addOnSuccessListener {
-                                                FirebaseFirestore.getInstance()
-                                                        .collection("Users").document(uid)
-                                                        .collection("userParties").whereEqualTo(Party.FIELD_NAME, partyName.toString()).get().addOnSuccessListener { docs ->
-                                                            FirebaseFirestore.getInstance().runTransaction {
-                                                                it.set(FirebaseFirestore.getInstance().collection("Parties").document(docs.documents.first().id), newParty)
-                                                                null
-                                                            }.addOnSuccessListener {
-                                                                finishCreation(docs.documents.first().id, uid)
-                                                            }
+                                            FirebaseFirestore.getInstance()
+                                                    .collection("Users").document(uid)
+                                                    .collection("userParties").whereEqualTo(Party.FIELD_NAME, partyName.toString()).get().addOnSuccessListener { docs ->
+                                                        FirebaseFirestore.getInstance().runTransaction {
+                                                            it.set(FirebaseFirestore.getInstance().collection("Parties").document(docs.documents.first().id), newParty)
+                                                            null
+                                                        }.addOnSuccessListener {
+                                                            finishCreation(docs.documents.first().id, uid)
                                                         }
+                                                    }
                                         }
                                     } else {
-                                        Toast.makeText(this, "You have created a party with this name already", Toast.LENGTH_LONG).show()
+                                        Toast.makeText(requireContext(), "You have created a party with this name already", Toast.LENGTH_LONG).show()
                                     }
                                 }
                     }
                     .addOnFailureListener { exc ->
-                        Log.e(TAG, "Error getting room code list", exc)
+                        Log.e(HomePersonalPartiesFragment.TAG, "Error getting room code list", exc)
                     }
         }
     }
@@ -336,7 +332,7 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun finishCreation(partyQueueId : String, ownerId : String){
-        val intent = Intent(this, JukeBoxActivity::class.java)
+        val intent = Intent(requireContext(), JukeBoxActivity::class.java)
         intent.putExtra("partyQueueId", partyQueueId)
         intent.putExtra("OwnerId", ownerId)
         startActivity(intent)
@@ -369,28 +365,23 @@ class HomeActivity : AppCompatActivity() {
         divider2.visibility = View.VISIBLE
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.leave_party -> run {
-                val intent = Intent(this, HomeActivity::class.java)
+                val intent = Intent(requireContext(), HomePersonalPartiesFragment::class.java)
                 startActivity(intent)
                 true
             }
             R.id.action_settings -> {
-                val intent = Intent(this, SettingsActivity::class.java)
+                val intent = Intent(requireContext(), SettingsActivity::class.java)
                 startActivity(intent)
                 true
             }
             R.id.log_out -> run {
                 FirebaseAuth.getInstance().signOut()
                 LoginManager.getInstance().logOut()
-                val intent = Intent(this, SignInActivity::class.java)
+                val intent = Intent(requireContext(), SignInActivity::class.java)
                 startActivity(intent)
                 true
             }
@@ -398,41 +389,28 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
+
+
     companion object {
+        /**
+         * Use this factory method to create a new instance of
+         * this fragment using the provided parameters.
+         *
+         * @param param1 Parameter 1.
+         * @param param2 Parameter 2.
+         * @return A new instance of fragment HomePersonalPartiesFragment.
+         */
 
-        private const val TAG = "Home Activity"
+        const val TAG : String = "PersonalPartiesFragment"
 
-        fun leaveParty(context: Context) {
-            val auth = FirebaseAuth.getInstance()
-            val fireStore = FirebaseFirestore.getInstance()
-            val uid = auth.currentUser!!.uid
-            // update the current party attr. on the user.
-            val userDoc = fireStore.collection("Users").document(uid)
-            userDoc.get()
-                    .addOnSuccessListener { document ->
-                        val user = document.toObject(User::class.java)
-                        if (user!!.currentParty != null) {
-                            val oldPartyId = user.currentParty.toString()
-                            fireStore.runTransaction { transaction ->
-                                transaction.update(userDoc, User.FIELD_CURRENT_PARTY, null)
-                                null
-                            }.addOnSuccessListener {
-                                //remove the user from the member collection of the party.
-                                fireStore.collection("Parties").document(oldPartyId)
-                                        .collection("members").whereEqualTo(User.FIELD_USER_ID, uid)
-                                        .get()
-                                        .addOnSuccessListener { documents ->
-                                            if(!documents.isEmpty){
-                                                for(doc in documents){
-                                                    doc.reference.delete()
-                                                }
-                                            }
-                                            val intent = Intent(context, HomeActivity::class.java)
-                                            context.startActivity(intent)
-                                        }
-                            }
-                        }
+        // TODO: Rename and change types and number of parameters
+        @JvmStatic
+        fun newInstance(param1: String, param2: String) =
+                HomePersonalPartiesFragment().apply {
+                    arguments = Bundle().apply {
+                        putString(ARG_PARAM1, param1)
+                        putString(ARG_PARAM2, param2)
                     }
-        }
+                }
     }
 }

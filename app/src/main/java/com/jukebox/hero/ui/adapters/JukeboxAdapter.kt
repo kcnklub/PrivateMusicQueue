@@ -33,7 +33,7 @@ class JukeboxAdapter(query : Query, val context: Context) : FirestoreAdapter<Juk
             jukeboxCode.text = "Room Code : " + party.roomCode
 
             jukebox.setOnClickListener {
-                Toast.makeText(context, "this is going to take you do the party now?", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "this is going to take you to the party now?", Toast.LENGTH_LONG).show()
             }
         }
     }
