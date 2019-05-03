@@ -129,65 +129,7 @@ class HomeActivity : AppCompatActivity() {
                 }
     }
 
-    private fun addPartyToHistory(uid: String, partyId: String) {
-        val userDoc = firestore.collection("Users").document(uid)
-        userDoc.get()
-                .addOnSuccessListener { doc ->
-                    if (doc != null) {
-                        val data = doc.data!!
-                        if (data.containsKey("History")) {
-                            val history = data["History"] as MutableList<Any>
 
-                            history.add(0, partyId)
-                            for (i in 1..history.size-1) {
-                                if (history[i].toString() == partyId) {
-                                    history.removeAt(i)
-                                    break
-                                }
-                            }
-                            data["History"] = history
-                        } else {
-                            val history = mutableListOf(partyId)
-                            data["History"] = history
-                        }
-
-                        updateUserData(uid, data)
-                    }
-                }
-    }
-
-    private fun updateUserData(uid: String, data: Map<String, Any>) {
-        val userDoc = firestore.collection("Users").document(uid)
-        userDoc.update(data)
-                .addOnSuccessListener {
-                    Log.d(TAG, "User object successfully updated.")
-                }
-                .addOnFailureListener { exception ->
-                    Log.e(TAG, "Error updating user object.", exception)
-                }
-    }
-
-    private fun addUserToParty(party: String) {
-        val partyMembers = firestore.collection("Parties").document(party).collection("members").document()
-        FirebaseFirestore.getInstance().runTransaction { transaction ->
-            val member = User(null, FirebaseAuth.getInstance().currentUser!!.uid, null)
-            transaction.set(partyMembers, member)
-            null
-        }
-    }
-
-    private fun setCurrentParty(uid: String, party: String) {
-        firestore.collection("Users").document(uid)
-                .update(hashMapOf("currentParty" to party as Any))
-                .addOnSuccessListener { userDoc ->
-                    if (userDoc != null) {
-                        Log.d(TAG, "Updated current party to " + party + " for user " + uid)
-                    }
-                }
-                .addOnFailureListener { exception ->
-                    Log.e(TAG, "Error updating current party for user", exception)
-                }
-    }
 
     private fun getUsersCurrentParty(uid : String): Party? {
         var party : Party? = null
@@ -247,7 +189,7 @@ class HomeActivity : AppCompatActivity() {
             party["Users"] = List(1){ uid }
             party["PartyName"] = partyName.toString()
             party["Queue"] = List(0){}
-            val partyid = partyName.toString().replace(" ", "")
+
             val newParty = Party(uid, createRoomCode(), partyName.toString())
 
             firestore.collection("Parties")
@@ -407,6 +349,38 @@ class HomeActivity : AppCompatActivity() {
                             }
                         }
                     }
+        }
+
+        fun addUserToParty(party: String) {
+            val partyMembers = FirebaseFirestore.getInstance()
+                    .collection("Parties").document(party)
+                    .collection("members").document()
+            FirebaseFirestore.getInstance().runTransaction { transaction ->
+                val member = User(null, FirebaseAuth.getInstance().currentUser!!.uid, null)
+                transaction.set(partyMembers, member)
+                null
+            }
+        }
+
+        fun setCurrentParty(uid: String, party: String) {
+            val userRef = FirebaseFirestore.getInstance().collection("Users").document(uid)
+            FirebaseFirestore.getInstance().runTransaction {transaction ->
+                transaction.update(userRef, User.FIELD_CURRENT_PARTY, party)
+                null
+            }
+        }
+
+        fun addPartyToHistory(uid: String, partyId: String) {
+            val userHistoryRef = FirebaseFirestore.getInstance().collection("Users").document(uid).collection("history").document()
+            FirebaseFirestore.getInstance().collection("Parties").document(partyId).get().addOnSuccessListener {
+                val party = it.toObject(Party::class.java)
+                if (party != null) {
+                    FirebaseFirestore.getInstance().runTransaction { transaction ->
+                        transaction.set(userHistoryRef, party)
+                        null
+                    }
+                }
+            }
         }
     }
 }

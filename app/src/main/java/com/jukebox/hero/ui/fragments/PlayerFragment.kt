@@ -216,7 +216,6 @@ class PlayerFragment : Fragment(), SongsAdapter.OnSongChangeListener  {
         *  until it under 1333ms and then plays the next song. The runnable waits 1000ms after
         *  playing a new song before restarting the probes so it doesn't skip songs.
          */
-        /*
         val runnable = Runnable {
             while (true) {
                 // if we haven't played the next song yet, pull the current state
@@ -226,7 +225,6 @@ class PlayerFragment : Fragment(), SongsAdapter.OnSongChangeListener  {
 
                     // if the remaining time is under 1333ms, play the next song
                     if (remaining < 1333) {
-                        (requireActivity() as JukeBoxActivity).updateQueue()
                         playNextSong()
                         Thread.sleep(1000) // sleep the thread for a moment so we don't skip songs
                     }
@@ -237,7 +235,6 @@ class PlayerFragment : Fragment(), SongsAdapter.OnSongChangeListener  {
         }
         remainingTimeService = Thread(runnable)
         remainingTimeService!!.start()
-        */
     }
 
     fun play(trackURI: String?){
@@ -250,8 +247,10 @@ class PlayerFragment : Fragment(), SongsAdapter.OnSongChangeListener  {
     }
 
     fun playNextSong(){
+
         val db = FirebaseFirestore.getInstance()
         val partyId = (requireActivity() as JukeBoxActivity).partyID
+        JukeBoxActivity.updateQueue(partyId)
         db.collection("Parties").document(partyId)
                 .collection("Queue")
                 .orderBy(Song.FIELD_SCORE, Query.Direction.DESCENDING)
@@ -266,6 +265,13 @@ class PlayerFragment : Fragment(), SongsAdapter.OnSongChangeListener  {
                         Toast.makeText(requireContext(), "There is no song in queue!", Toast.LENGTH_SHORT).show()
                     }
                 }
+                .addOnFailureListener {
+                    Log.e(TAG, it.toString())
+                }
+    }
+
+    fun deletePrevious(){
+
     }
 
     // player controls

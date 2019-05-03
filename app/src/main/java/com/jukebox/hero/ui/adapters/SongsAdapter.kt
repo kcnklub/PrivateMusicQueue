@@ -1,27 +1,23 @@
 package com.jukebox.hero.ui.adapters
 
 import android.graphics.Color
-import android.os.Bundle
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RadioButton
-import android.widget.RadioGroup
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.jukebox.hero.Models.Song
 import com.jukebox.hero.R
-import com.jukebox.hero.ui.JukeBoxActivity
 import com.jukebox.hero.ui.fragments.SearchFragment
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.listview_song_item_row.view.*
 
 class SongsAdapter(val query : Query, private val listener : OnSongChangeListener) : FirestoreAdapter<SongsAdapter.SongHolder>(query){
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongsAdapter.SongHolder {
-        return SongsAdapter.SongHolder(LayoutInflater.from(parent.context)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongHolder {
+        return SongHolder(LayoutInflater.from(parent.context)
                 .inflate(R.layout.listview_song_item_row, parent, false))
     }
 
@@ -36,7 +32,7 @@ class SongsAdapter(val query : Query, private val listener : OnSongChangeListene
     override fun onDataChanged() {
         super.onDataChanged()
         query.get().addOnSuccessListener {
-            if(!(it.documents.isEmpty())) {
+            if(it.documents.isNotEmpty()) {
                 val newSong = it.documents.first().toObject(Song::class.java)
                 listener.onChange(newSong)
             }
@@ -83,32 +79,36 @@ class SongsAdapter(val query : Query, private val listener : OnSongChangeListene
                 // do the onclick
             }
             upvote.setOnClickListener {
-                if(state == 0) {
-                    state++
-                    score.text = (score.text.toString().toInt()+1).toString()
-                }
-                else if(state == 1) {
-                    state--
-                    score.text = (score.text.toString().toInt()-1).toString()
-                }
-                else {
-                    state+=2
-                    score.text = (score.text.toString().toInt()+2).toString()
+                when (state) {
+                    0 -> {
+                        state++
+                        score.text = (score.text.toString().toInt()+1).toString()
+                    }
+                    1 -> {
+                        state--
+                        score.text = (score.text.toString().toInt()-1).toString()
+                    }
+                    else -> {
+                        state+=2
+                        score.text = (score.text.toString().toInt()+2).toString()
+                    }
                 }
 
             }
             downvote.setOnClickListener {
-                if(state == 0) {
-                    state--
-                    score.text = (score.text.toString().toInt()-1).toString()
-                }
-                else if(state == -1) {
-                    state++
-                    score.text = (score.text.toString().toInt()+1).toString()
-                }
-                else {
-                    state-=2
-                    score.text = (score.text.toString().toInt()-2).toString()
+                when (state) {
+                    0 -> {
+                        state--
+                        score.text = (score.text.toString().toInt()-1).toString()
+                    }
+                    -1 -> {
+                        state++
+                        score.text = (score.text.toString().toInt()+1).toString()
+                    }
+                    else -> {
+                        state-=2
+                        score.text = (score.text.toString().toInt()-2).toString()
+                    }
                 }
 
             }

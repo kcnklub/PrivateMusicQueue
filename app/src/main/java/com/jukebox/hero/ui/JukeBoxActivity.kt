@@ -9,6 +9,8 @@ import android.view.MenuItem
 import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import com.jukebox.hero.Models.Song
 import com.jukebox.hero.R
 import com.jukebox.hero.ui.adapters.SimpleFragmentPagerAdapter
 import com.jukebox.hero.ui.fragments.JukeboxHomeFragment
@@ -77,9 +79,6 @@ class JukeBoxActivity : AppCompatActivity(){
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.leave_party -> {
                 HomeActivity.leaveParty(this)
@@ -118,5 +117,18 @@ class JukeBoxActivity : AppCompatActivity(){
         const val REDIRECT_URL = "https://google.com"
         const val CLIENT_ID = "a323c442192a47a6a3cd7e93a318f080"
         var spotifyAuthToken = ""
+
+        fun updateQueue(partyId: String){
+            FirebaseFirestore.getInstance().collection("Parties").document(partyId)
+                    .collection("Queue")
+                    .orderBy(Song.FIELD_SCORE, Query.Direction.DESCENDING)
+                    .orderBy(Song.FIELD_QUEUE_TIME, Query.Direction.ASCENDING)
+                    .limit(1)
+                    .get().addOnSuccessListener {
+                        if(!it.isEmpty){
+                            it.documents.first().reference.delete()
+                        }
+                    }
+        }
     }
 }
