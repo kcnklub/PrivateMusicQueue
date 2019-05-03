@@ -9,9 +9,6 @@ import android.view.MenuItem
 import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.WriteBatch
-import com.jukebox.hero.Models.Song
 import com.jukebox.hero.R
 import com.jukebox.hero.ui.adapters.SimpleFragmentPagerAdapter
 import com.jukebox.hero.ui.fragments.JukeboxHomeFragment
@@ -19,7 +16,6 @@ import com.jukebox.hero.ui.fragments.PlayerFragment
 import com.spotify.sdk.android.authentication.AuthenticationClient
 import com.spotify.sdk.android.authentication.AuthenticationRequest
 import com.spotify.sdk.android.authentication.AuthenticationResponse
-
 import kotlinx.android.synthetic.main.activity_main.*
 
 class JukeBoxActivity : AppCompatActivity(){
@@ -76,7 +72,7 @@ class JukeBoxActivity : AppCompatActivity(){
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
+        menuInflater.inflate(R.menu.jukebox_menu, menu)
         return true
     }
 
@@ -85,6 +81,10 @@ class JukeBoxActivity : AppCompatActivity(){
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
+            R.id.leave_party -> {
+                HomeActivity.leaveParty(this)
+                true
+            }
             R.id.action_settings -> {
                 val intent = Intent(this, SettingsActivity::class.java)
                 startActivity(intent)
@@ -94,11 +94,6 @@ class JukeBoxActivity : AppCompatActivity(){
                 FirebaseAuth.getInstance().signOut()
                 LoginManager.getInstance().logOut()
                 val intent = Intent(this, SignInActivity::class.java)
-                startActivity(intent)
-                true
-            }
-            R.id.party_manager -> {
-                val intent = Intent(this, HomeActivity::class.java)
                 startActivity(intent)
                 true
             }
@@ -113,29 +108,6 @@ class JukeBoxActivity : AppCompatActivity(){
             if(response.type == AuthenticationResponse.Type.TOKEN){
                 spotifyAuthToken = response.accessToken
                 Log.d(TAG, "!!!!!!!!!!AUTH TOKEN: $spotifyAuthToken")
-            }
-        }
-    }
-
-    fun updateQueue(){
-        db = FirebaseFirestore.getInstance()
-        val query = db.collection("Parties")
-                .document(partyID).collection("Queue")
-                .orderBy(Song.FIELD_PLACE_IN_QUEUE, Query.Direction.ASCENDING)
-
-        query.get().addOnSuccessListener {documents ->
-            val batch : WriteBatch = db.batch()
-            for(document in documents){
-                val docRef = db.collection("Parties").document(partyID).collection("Queue").document(document.id)
-                val songInQueue = document.toObject(Song::class.java)
-                if(songInQueue.placeInQueue == 1){
-                    batch.delete(docRef)
-                } else {
-                    batch.update(docRef, Song.FIELD_PLACE_IN_QUEUE, songInQueue.placeInQueue!!.minus(1))
-                }
-            }
-            batch.commit().addOnCompleteListener{
-                Log.d(TAG, "we made it.")
             }
         }
     }

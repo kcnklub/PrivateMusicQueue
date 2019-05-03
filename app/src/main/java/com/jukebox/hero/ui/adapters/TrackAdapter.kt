@@ -75,7 +75,6 @@ class TrackAdapter(private var data: List<Track>, val context: Context, private 
                     .addOnSuccessListener { documents ->
                         for (document in documents){
                             count += 1
-                            Log.d(TAG, "${document.data}")
                         }
                         FirebaseFirestore.getInstance().runTransaction{ p1 ->
                             Log.d(TAG, count.toString())

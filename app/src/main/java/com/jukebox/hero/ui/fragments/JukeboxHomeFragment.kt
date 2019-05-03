@@ -52,7 +52,7 @@ class JukeboxHomeFragment : Fragment() {
         searchResultsList= view!!.findViewById(R.id.queue_list)
         query = fireStore.collection("Parties")
                 .document(partyId).collection("Queue")
-                //.orderBy(Song.)
+                .orderBy(Song.FIELD_SCORE, Query.Direction.DESCENDING)
                 .orderBy(Song.FIELD_QUEUE_TIME, Query.Direction.ASCENDING)
         (this.requireActivity() as JukeBoxActivity).jukeboxHomeFragment = this
 

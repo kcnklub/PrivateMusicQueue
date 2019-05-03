@@ -23,9 +23,9 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query.Direction
+import com.jukebox.hero.Models.User
 import com.jukebox.hero.R
 import kotlinx.android.synthetic.main.activity_sign_in.*
-import java.util.*
 
 class SignInActivity : AppCompatActivity(), View.OnClickListener{
 
@@ -150,22 +150,15 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener{
                                     .get()
                                     .addOnSuccessListener { querySnapshot ->
                                         // get a new unique userCode
-                                        var userCode = if (querySnapshot != null) {
+                                        var userCode = if (!querySnapshot.isEmpty) {
                                             querySnapshot.documents.first().data!!["UserCode"].toString()
                                         } else {
                                             "0000"
                                         }
                                         userCode = ((userCode.toInt()) + 1).toString().padStart(4, '0')
 
-                                        val u = HashMap<String, Any?>()
-                                        u["DisplayName"] = user.displayName.toString()
-                                        u["UserId"] = user.uid
-                                        u["UserCode"] = userCode
-                                        u["CurrentParty"] = null
-                                        u["History"] = mutableListOf<String>()
-                                        u["HostedParties"] = mutableListOf<String>()
-
-                                        userDoc.set(u)
+                                        val updateNewUser = User(user.displayName.toString(), user.uid, userCode, null)
+                                        userDoc.set(updateNewUser)
                                                 .addOnSuccessListener {
                                                     val intent = Intent(this, HomeActivity::class.java)
                                                     startActivity(intent)
@@ -175,8 +168,6 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener{
                                                     Log.e(TAG, "Error creating user document on sign in", error)
                                                 }
                                     }
-
-
                         }
                     }
                     .addOnFailureListener {
