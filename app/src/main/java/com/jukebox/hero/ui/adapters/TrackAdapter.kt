@@ -14,6 +14,7 @@ import com.jukebox.hero.R
 import com.squareup.picasso.Picasso
 import kaaes.spotify.webapi.android.models.Track
 import kotlinx.android.synthetic.main.listview_song_item_row.view.*
+import java.util.*
 
 class TrackAdapter(private var data: List<Track>, val context: Context, private val partyQueueId: String) : RecyclerView.Adapter<TrackAdapter.SongHolder>(){
 
@@ -78,7 +79,7 @@ class TrackAdapter(private var data: List<Track>, val context: Context, private 
                         }
                         FirebaseFirestore.getInstance().runTransaction{ p1 ->
                             Log.d(TAG, count.toString())
-                            val song = Song(songName, artistName, albumArtURL, songURI, count + 1)
+                            val song = Song(songName, artistName, albumArtURL, songURI, count + 1, Date())
                             p1.set(songRef, song)
                             null
                         }.addOnSuccessListener {

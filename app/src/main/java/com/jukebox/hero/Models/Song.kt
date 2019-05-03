@@ -1,6 +1,7 @@
 package com.jukebox.hero.Models
 
 import com.google.firebase.firestore.IgnoreExtraProperties
+import java.util.*
 
 @IgnoreExtraProperties
 data class Song(
@@ -8,7 +9,8 @@ data class Song(
         var artist: String? = null,
         var albumArt: String? = null,
         var songURI: String? = null,
-        var placeInQueue : Int? = null
+        var placeInQueue : Int? = null,
+        var queueTime : Date? = null
 ){
     companion object {
         const val FIELD_NAME = "name"
@@ -16,5 +18,6 @@ data class Song(
         const val FIELD_ALBUM_ART = "albumArt"
         const val FIELD_SONG_URI = "songURI"
         const val FIELD_PLACE_IN_QUEUE = "placeInQueue"
+        const val FIELD_QUEUE_TIME = "queueTime"
     }
 }
