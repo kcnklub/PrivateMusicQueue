@@ -1,14 +1,14 @@
 package com.jukebox.hero.Models
 
 
-object User {
-    data class Result(val userId: Int,
-                      val username : String,
-                      val userEmail : String,
-                      val userHashPass : String,
-                      val message : String)
-
-    data class User(val username: String,
-                    val userEmail: String,
-                    val userHashPass: String)
+data class User (
+        var displayName: String? = null,
+        var userId: String? = null,
+        var userCode: String? = null,
+        var currentParty: String? = null
+){
+    companion object {
+        const val FIELD_CURRENT_PARTY = "currentParty"
+        const val FIELD_USER_ID = "userId"
+    }
 }

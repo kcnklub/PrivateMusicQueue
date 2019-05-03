@@ -23,17 +23,17 @@ class JukeboxHomeFragment : Fragment() {
     private var param2: String? = null
     private lateinit var linearLayoutManager: LinearLayoutManager
 
-    lateinit var query: Query
-    lateinit var adapter : SongsAdapter
+    private lateinit var query: Query
+    private lateinit var adapter : SongsAdapter
     private lateinit var searchResultsList : RecyclerView
 
-    private lateinit var firestore : FirebaseFirestore
+    private lateinit var fireStore : FirebaseFirestore
     private lateinit var partyId : String
-    lateinit var queue : ArrayList<Song>
+    private lateinit var queue : ArrayList<Song>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        firestore = FirebaseFirestore.getInstance()
+        fireStore = FirebaseFirestore.getInstance()
         partyId = (activity as JukeBoxActivity).partyID
         Log.d("TAG", partyId)
         queue = ArrayList()
@@ -50,9 +50,10 @@ class JukeboxHomeFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_jukebox_home, container, false)
         linearLayoutManager = LinearLayoutManager(requireContext())
         searchResultsList= view!!.findViewById(R.id.queue_list)
-        query = firestore.collection("Parties")
+        query = fireStore.collection("Parties")
                 .document(partyId).collection("Queue")
-                .orderBy(Song.FIELD_PLACE_IN_QUEUE, Query.Direction.ASCENDING)
+                .orderBy(Song.FIELD_SCORE, Query.Direction.DESCENDING)
+                .orderBy(Song.FIELD_QUEUE_TIME, Query.Direction.ASCENDING)
         (this.requireActivity() as JukeBoxActivity).jukeboxHomeFragment = this
 
         return view
@@ -67,15 +68,6 @@ class JukeboxHomeFragment : Fragment() {
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment JukeboxHomeFragment.
-         */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
                 JukeboxHomeFragment().apply {

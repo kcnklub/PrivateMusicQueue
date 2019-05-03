@@ -254,7 +254,8 @@ class PlayerFragment : Fragment(), SongsAdapter.OnSongChangeListener  {
         val partyId = (requireActivity() as JukeBoxActivity).partyID
         db.collection("Parties").document(partyId)
                 .collection("Queue")
-                .orderBy(Song.FIELD_PLACE_IN_QUEUE, Query.Direction.ASCENDING)
+                .orderBy(Song.FIELD_SCORE, Query.Direction.DESCENDING)
+                .orderBy(Song.FIELD_QUEUE_TIME, Query.Direction.ASCENDING)
                 .limit(1)
                 .get()
                 .addOnSuccessListener { document ->
@@ -276,7 +277,6 @@ class PlayerFragment : Fragment(), SongsAdapter.OnSongChangeListener  {
     }
 
     private fun onSkipNext(){
-        (requireActivity() as JukeBoxActivity).updateQueue()
         playNextSong()
         lastSongPos = 10000
     }
