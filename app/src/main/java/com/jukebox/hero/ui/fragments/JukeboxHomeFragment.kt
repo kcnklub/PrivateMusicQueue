@@ -35,6 +35,7 @@ class JukeboxHomeFragment : Fragment() {
         super.onCreate(savedInstanceState)
         fireStore = FirebaseFirestore.getInstance()
         partyId = (activity as JukeBoxActivity).partyID
+        partyID = partyId
         Log.d("TAG", partyId)
         queue = ArrayList()
 
@@ -61,7 +62,7 @@ class JukeboxHomeFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        adapter = SongsAdapter(query, (activity as JukeBoxActivity).playerFragment)
+        adapter = SongsAdapter(query, (activity as JukeBoxActivity).playerFragment, partyId)
         searchResultsList.layoutManager = linearLayoutManager
         searchResultsList.adapter = adapter
         adapter.startListening()
@@ -69,6 +70,7 @@ class JukeboxHomeFragment : Fragment() {
 
     companion object {
         @JvmStatic
+        var partyID = ""
         fun newInstance(param1: String, param2: String) =
                 JukeboxHomeFragment().apply {
                     arguments = Bundle().apply {

@@ -7,91 +7,100 @@
     android:layout_height="wrap_content"
     android:padding="10dp">
 
-    <LinearLayout
-        android:id="@+id/song_entry"
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        tools:ignore="UselessParent">
-
-        <ImageView
-            android:id="@+id/album_art"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="This is something that was needed?" />
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="10dp">
 
         <LinearLayout
-            android:id="@+id/song_info"
-            android:layout_width="wrap_content"
+            android:id="@+id/song_entry"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingStart="5dp"
-            android:paddingEnd="5dp">
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toStartOf="@+id/score"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:ignore="UselessParent">
 
-            <TextView
-                android:id="@+id/song_name"
+            <ImageView
+                android:id="@+id/album_art"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:contentDescription="This is something that was needed?"
+                app:layout_constraintDimensionRatio="1:1" />
+
+            <LinearLayout
+                android:id="@+id/song_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="8dp"
-                android:textAppearance="@style/TextAppearance.AppCompat"
-                android:textColor="@color/cat_white"
-                android:textStyle="bold" />
+                android:orientation="vertical"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp">
 
-            <TextView
-                android:id="@+id/artist"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/cat_white" />
+                <TextView
+                    android:id="@+id/song_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="marquee"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:paddingBottom="8dp"
+                    android:scrollHorizontally="true"
+                    android:singleLine="true"
+                    android:textAppearance="@style/TextAppearance.AppCompat"
+                    android:textColor="@color/cat_white"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/artist"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/cat_white" />
+            </LinearLayout>
+
         </LinearLayout>
 
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
+        <ImageButton
+            android:id="@+id/downvote"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:clickable="true"
+            android:tint="@android:color/holo_red_light"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_thumb_down_white_48dp"
+            tools:layout_editor_absoluteY="0dp" />
+
+        <ImageButton
+            android:id="@+id/upvote"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:clickable="true"
+            android:tint="@color/cat_button_border_checked"
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@+id/downvote"
+            app:srcCompat="@drawable/ic_thumb_up_white_48dp"
+            tools:layout_editor_absoluteY="0dp" />
+
+        <TextView
+            android:id="@+id/score"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            tools:layout_editor_absoluteX="10dp">
+            android:layout_weight="1"
+            android:ems="10"
+            android:padding="13dp"
+            android:text="0"
+            android:textAlignment="center"
+            android:textColor="@color/cat_white"
+            android:visibility="gone"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toStartOf="@+id/upvote"
+            tools:layout_editor_absoluteY="0dp"
+            tools:text="0" />
 
-            <ImageButton
-                android:id="@+id/downvote"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:clickable="true"
-                android:tint="@android:color/holo_red_light"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:srcCompat="@drawable/ic_thumb_down_white_48dp"
-                tools:layout_editor_absoluteY="0dp" />
+    </android.support.constraint.ConstraintLayout>
 
-            <ImageButton
-                android:id="@+id/upvote"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
-                android:background="@android:color/transparent"
-                android:clickable="true"
-                android:tint="@color/cat_button_border_checked"
-                android:visibility="gone"
-                app:layout_constraintEnd_toStartOf="@+id/downvote"
-                app:srcCompat="@drawable/ic_thumb_up_white_48dp"
-                tools:layout_editor_absoluteY="0dp" />
-
-            <TextView
-                android:id="@+id/score"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_weight="1"
-                android:ems="10"
-                android:padding="13dp"
-                android:text="0"
-                android:textAlignment="center"
-                android:textColor="@color/cat_white"
-                android:visibility="gone"
-                app:layout_constraintDimensionRatio="1:1"
-                app:layout_constraintEnd_toStartOf="@+id/upvote"
-                tools:layout_editor_absoluteY="1dp"
-                tools:text="0" />
-
-        </android.support.constraint.ConstraintLayout>
-
-    </LinearLayout>
 </LinearLayout>

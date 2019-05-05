@@ -8,13 +8,16 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.jukebox.hero.Models.Party
 import com.jukebox.hero.Models.Song
 import com.jukebox.hero.R
+import com.jukebox.hero.ui.JukeBoxActivity
+import com.jukebox.hero.ui.fragments.JukeboxHomeFragment
 import com.jukebox.hero.ui.fragments.SearchFragment
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.listview_song_item_row.view.*
 
-class SongsAdapter(val query : Query, private val listener : OnSongChangeListener) : FirestoreAdapter<SongsAdapter.SongHolder>(query){
+class SongsAdapter(val query : Query, private val listener : OnSongChangeListener, val partyId: String) : FirestoreAdapter<SongsAdapter.SongHolder>(query){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongHolder {
         return SongHolder(LayoutInflater.from(parent.context)
@@ -83,14 +86,17 @@ class SongsAdapter(val query : Query, private val listener : OnSongChangeListene
                     0 -> {
                         state++
                         score.text = (score.text.toString().toInt()+1).toString()
+                        updateScore(song, 1)
                     }
                     1 -> {
                         state--
                         score.text = (score.text.toString().toInt()-1).toString()
+                        updateScore(song, -1)
                     }
                     else -> {
                         state+=2
                         score.text = (score.text.toString().toInt()+2).toString()
+                        updateScore(song, 2)
                     }
                 }
 
@@ -100,29 +106,41 @@ class SongsAdapter(val query : Query, private val listener : OnSongChangeListene
                     0 -> {
                         state--
                         score.text = (score.text.toString().toInt()-1).toString()
+                        updateScore(song, -1)
                     }
                     -1 -> {
                         state++
                         score.text = (score.text.toString().toInt()+1).toString()
+                        updateScore(song, 1)
                     }
                     else -> {
                         state-=2
                         score.text = (score.text.toString().toInt()-2).toString()
+                        updateScore(song, -2)
                     }
                 }
 
             }
         }
-    }
 
-    private fun updateScore(add : Int) {
-        val db = FirebaseFirestore.getInstance()
-        val partyRef = db.collection("Parties").document("")
-        val songRef = partyRef.collection("Queue")
+        fun updateScore(song: Song, value : Int) {
+            val partyId = JukeboxHomeFragment.partyID
+            val db = FirebaseFirestore.getInstance()
+            val queue = db.collection("Parties").document(partyId).collection("Queue")
+            queue.get().addOnSuccessListener { documents ->
+                for(doc in documents) {
+                    if(doc.data["songURI"] == song.songURI) {
+                        Log.d(TAG,"${doc.data["name"]}")
+                        val data = doc.data
+                        data["score"] = song.score!!+value
+                        queue.document(doc.id).update(data)
+                    }
+                }
+            }
+        }
     }
 
     companion object {
-        fun create(): SearchFragment = SearchFragment()
         const val TAG = "SongAdapter"
     }
 }
