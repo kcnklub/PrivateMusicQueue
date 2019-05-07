@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/cat_grayscale_8_90"
+    android:background="@color/cat_grayscale_25"
     tools:context=".ui.fragments.PlayerFragment">
 
     <!-- TODO: Update blank fragment layout -->
