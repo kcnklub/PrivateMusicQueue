@@ -8,7 +8,7 @@ android {
     flavorDimensions "minSdkVersion"
 
     defaultConfig {
-        applicationId "com.jukebox.hero"
+        applicationId "com.pmq"
         minSdkVersion 23
         targetSdkVersion 28
         versionCode 1

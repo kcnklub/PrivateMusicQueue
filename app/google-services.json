@@ -1,39 +1,45 @@
 {
   "project_info": {
-    "project_number": "461202061173",
-    "firebase_url": "https://jukebox-hero.firebaseio.com",
-    "project_id": "jukebox-hero",
-    "storage_bucket": "jukebox-hero.appspot.com"
+    "project_number": "936378018978",
+    "firebase_url": "https://privatemusicqueue.firebaseio.com",
+    "project_id": "privatemusicqueue",
+    "storage_bucket": "privatemusicqueue.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:461202061173:android:2ec334cae505f175",
+        "mobilesdk_app_id": "1:936378018978:android:dad815e5b07e9b15",
         "android_client_info": {
-          "package_name": "com.jukebox.hero"
+          "package_name": "com.pmq"
         }
       },
       "oauth_client": [
         {
-          "client_id": "461202061173-32phljv944lggo4310q702o6qskvag40.apps.googleusercontent.com",
+          "client_id": "936378018978-ssqq4mrun23cq617875tbft0pjr45epm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pmq",
+            "certificate_hash": "f8a38fe507d2bc0e3b722201f15a95b9f7b0dbc9"
+          }
+        },
+        {
+          "client_id": "936378018978-dvah15oiv0hgungskliim9qp13frnftj.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyB_aogTP1GKfEewsgMTPO1EMduJZCaScNU"
+          "current_key": "AIzaSyCMZ7Okjpj6plYeF8LpmeoBMdjwpHMmeRE"
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 2
+          "other_platform_oauth_client": [
+            {
+              "client_id": "936378018978-dvah15oiv0hgungskliim9qp13frnftj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

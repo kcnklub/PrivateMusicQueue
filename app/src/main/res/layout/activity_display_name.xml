@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/cat_grayscale_8_90"
-    tools:context=".ui.DisplayNameActivity">
+    tools:context="com.pmq.ui.DisplayNameActivity">
 
     <TextView
         android:id="@+id/tvPrompt"
