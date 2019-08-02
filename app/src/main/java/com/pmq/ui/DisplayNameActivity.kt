@@ -2,11 +2,11 @@ package com.pmq.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
-import com.pmq.hero.R
+import com.pmq.R
 import kotlinx.android.synthetic.main.activity_display_name.*
 
 

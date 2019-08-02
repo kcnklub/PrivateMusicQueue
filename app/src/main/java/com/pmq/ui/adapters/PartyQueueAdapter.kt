@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import com.pmq.Models.PartyQueue
-import com.pmq.hero.R
+import com.pmq.R
 
 class PartyQueueAdapter(context: Context,
                         private var layoutResourceId : Int,

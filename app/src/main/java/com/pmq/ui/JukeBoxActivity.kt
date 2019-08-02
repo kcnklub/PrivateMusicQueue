@@ -2,16 +2,17 @@ package com.pmq.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import com.facebook.login.LoginManager
+import androidx.appcompat.app.AppCompatActivity
+import androidx.viewpager.widget.ViewPager
+import com.google.android.material.tabs.TabLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.pmq.Models.Song
-import com.pmq.hero.R
+import com.pmq.R
 import com.pmq.ui.adapters.SimpleFragmentPagerAdapter
 import com.pmq.ui.fragments.JukeboxHomeFragment
 import com.pmq.ui.fragments.PlayerFragment
@@ -35,7 +36,7 @@ class JukeBoxActivity : AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
+//        setSupportActionBar(toolbar)
 
         partyID = intent.getStringExtra("partyQueueId")
         ownerID = intent.getStringExtra("OwnerId")
@@ -48,8 +49,10 @@ class JukeBoxActivity : AppCompatActivity(){
         Log.d(TAG, "We are in party $partyID")
 
         // set up bottom took bar.
-        viewpager.adapter = SimpleFragmentPagerAdapter(this, supportFragmentManager)
-        navigation.setupWithViewPager(viewpager)
+        val viewPager = findViewById<ViewPager>(R.id.viewpager)
+        viewPager.adapter = SimpleFragmentPagerAdapter(this, supportFragmentManager)
+        val navigation = findViewById<TabLayout>(R.id.navigation)
+        navigation.setupWithViewPager(viewPager)
 
         navigation.getTabAt(0)?.setIcon(R.drawable.ic_view_agenda_white_24dp)
         navigation.getTabAt(0)?.text = ""
@@ -60,8 +63,8 @@ class JukeBoxActivity : AppCompatActivity(){
         navigation.getTabAt(2)?.setIcon(R.drawable.ic_search_white_24dp)
         navigation.getTabAt(2)?.text = ""
 
-        jukeboxHomeFragment = (viewpager.adapter as SimpleFragmentPagerAdapter).getItem(0) as JukeboxHomeFragment
-        playerFragment = (viewpager.adapter as SimpleFragmentPagerAdapter).getItem(1) as PlayerFragment
+        jukeboxHomeFragment = (viewPager.adapter as SimpleFragmentPagerAdapter).getItem(0) as JukeboxHomeFragment
+        playerFragment = (viewPager.adapter as SimpleFragmentPagerAdapter).getItem(1) as PlayerFragment
 
         // spotify shit
         val builder = AuthenticationRequest.Builder(CLIENT_ID,
@@ -91,7 +94,6 @@ class JukeBoxActivity : AppCompatActivity(){
             }
             R.id.log_out -> run {
                 FirebaseAuth.getInstance().signOut()
-                LoginManager.getInstance().logOut()
                 val intent = Intent(this, SignInActivity::class.java)
                 startActivity(intent)
                 true

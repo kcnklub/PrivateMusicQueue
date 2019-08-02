@@ -1,16 +1,16 @@
 package com.pmq.ui.fragments
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
-import com.pmq.hero.R
+import com.pmq.R
 import com.pmq.ui.JukeBoxActivity
 import com.pmq.ui.adapters.TrackAdapter
 import kaaes.spotify.webapi.android.SpotifyApi

@@ -1,4 +1,4 @@
-package com.pmq.hero
+package com.pmq
 
 import org.junit.Assert.assertEquals
 import org.junit.Test

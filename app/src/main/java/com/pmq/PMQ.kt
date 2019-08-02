@@ -8,7 +8,6 @@ idk this is to get rid of a warning will add actual
 header later.
  */
 class PMQ : Application() {
-
     companion object {
     }
 }

@@ -3,26 +3,26 @@ package com.pmq.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
-import com.facebook.login.LoginManager
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager.widget.ViewPager
+import com.google.android.material.tabs.TabLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.pmq.Models.Party
 import com.pmq.Models.User
-import com.pmq.hero.R
+import com.pmq.R
 import com.pmq.ui.adapters.HomeFragmentAdapter
 import com.pmq.ui.adapters.JukeboxAdapter
 import com.pmq.ui.fragments.HomeLocalPartiesFragment
 import com.pmq.ui.fragments.HomePersonalPartiesFragment
-import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 import kotlin.random.Random
 
@@ -65,8 +65,10 @@ class HomeActivity : AppCompatActivity() {
 
 
         // set up bottom took bar.
-        viewpager.adapter = HomeFragmentAdapter(this, supportFragmentManager)
-        navigation.setupWithViewPager(viewpager)
+        val viewPager = findViewById<ViewPager>(R.id.viewpager)
+        viewPager.adapter = HomeFragmentAdapter(this, supportFragmentManager)
+        val navigation = findViewById<TabLayout>(R.id.navigation)
+        navigation.setupWithViewPager(viewPager)
 
         navigation.getTabAt(0)?.setIcon(R.drawable.ic_view_agenda_white_24dp)
         navigation.getTabAt(0)?.text = ""
@@ -75,8 +77,8 @@ class HomeActivity : AppCompatActivity() {
         navigation.getTabAt(1)?.text = ""
 
 
-        personalPartiesFragment = (viewpager.adapter as HomeFragmentAdapter).getItem(0) as HomePersonalPartiesFragment
-        localPartiesFragment = (viewpager.adapter as HomeFragmentAdapter).getItem(1) as HomeLocalPartiesFragment
+        personalPartiesFragment = (viewPager.adapter as HomeFragmentAdapter).getItem(0) as HomePersonalPartiesFragment
+        localPartiesFragment = (viewPager.adapter as HomeFragmentAdapter).getItem(1) as HomeLocalPartiesFragment
 
 //        auth = FirebaseAuth.getInstance()
 //        firestore = FirebaseFirestore.getInstance()
@@ -327,7 +329,6 @@ class HomeActivity : AppCompatActivity() {
             }
             R.id.log_out -> run {
                 FirebaseAuth.getInstance().signOut()
-                LoginManager.getInstance().logOut()
                 val intent = Intent(this, SignInActivity::class.java)
                 startActivity(intent)
                 true

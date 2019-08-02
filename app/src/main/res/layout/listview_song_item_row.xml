@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:padding="10dp">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:layout_editor_absoluteX="10dp">
@@ -101,6 +101,6 @@
             tools:layout_editor_absoluteY="0dp"
             tools:text="0" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

@@ -1,11 +1,11 @@
 package com.pmq.ui.fragments
 
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.pmq.hero.R
+import androidx.recyclerview.widget.RecyclerView
+import com.pmq.R
 
 
 import com.pmq.ui.fragments.HistoryItemFragment.OnListFragmentInteractionListener

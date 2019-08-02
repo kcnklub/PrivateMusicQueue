@@ -2,15 +2,15 @@ package com.pmq.ui.adapters
 
 import android.app.AlertDialog
 import android.content.Context
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
 import com.pmq.Models.Song
-import com.pmq.hero.R
+import com.pmq.R
 import com.squareup.picasso.Picasso
 import kaaes.spotify.webapi.android.models.Track
 import kotlinx.android.synthetic.main.listview_song_item_row.view.*

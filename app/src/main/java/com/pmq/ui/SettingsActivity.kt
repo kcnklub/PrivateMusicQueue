@@ -1,8 +1,8 @@
 package com.pmq.ui
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import com.pmq.hero.R
+import androidx.appcompat.app.AppCompatActivity
+import com.pmq.R
 
 
 class SettingsActivity : AppCompatActivity() {
@@ -11,8 +11,4 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.content_settings)
     }
-
-//    fun increaseText(View: view) {
-//
-//    }
 }

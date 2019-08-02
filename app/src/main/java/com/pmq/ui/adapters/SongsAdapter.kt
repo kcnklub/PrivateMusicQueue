@@ -1,15 +1,15 @@
 package com.pmq.ui.adapters
 
 import android.graphics.Color
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.pmq.Models.Song
-import com.pmq.hero.R
+import com.pmq.R
 import com.pmq.ui.fragments.JukeboxHomeFragment
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.listview_song_item_row.view.*
